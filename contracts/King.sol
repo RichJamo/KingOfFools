@@ -21,13 +21,8 @@ contract King {
         view
         returns (int256)
     {
-        (
-            uint80 roundID,
-            int256 price,
-            uint256 startedAt,
-            uint256 timeStamp,
-            uint80 answeredInRound
-        ) = AggregatorV3Interface(_oracle_address).latestRoundData();
+        (, int256 price, , , ) = AggregatorV3Interface(_oracle_address)
+            .latestRoundData();
         return price;
     }
 
@@ -38,10 +33,11 @@ contract King {
             "You're not depositing enough ether!"
         ); // check here that msg.sender is payable?
         if (previous_maximum > 0) {
-            king.transfer(msg.value); //change this to a call?
-        }
+            previous_maximum = msg.value;
+            (bool sent, ) = king.call{value: msg.value}("");
+            require(sent, "Failed to send Ether");
+        } else previous_maximum = msg.value;
         king = payable(msg.sender);
-        previous_maximum = msg.value;
     }
 
     function deposit(uint256 deposit_amount) public {
