@@ -40,7 +40,7 @@ contract King {
         king = payable(msg.sender);
     }
 
-    function deposit(uint256 deposit_amount) public {
+    function deposit(uint256 deposit_amount) external {
         require(
             deposit_amount >=
                 (3 *
@@ -66,7 +66,7 @@ contract King {
         king = payable(msg.sender);
     }
 
-    function _king() public view returns (address payable) {
+    function _king() external view returns (address payable) {
         return king;
     }
 }
