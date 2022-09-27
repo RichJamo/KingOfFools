@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/richardjamieson/Documents/GitHub/King/contracts/King.sol": {
-      "lastModificationDate": 1664226160060,
-      "contentHash": "18906573d84a99c3bcd16dab3a5d35fe",
+      "lastModificationDate": 1664255335993,
+      "contentHash": "4e07c54fefa2fd2e2a611645308b3e01",
       "sourceName": "contracts/King.sol",
       "solcConfig": {
         "version": "0.8.13",
@@ -40,11 +40,11 @@
         }
       },
       "imports": [
-        "@openzeppelin/contracts/token/ERC20/ERC20.sol",
+        "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
         "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol"
       ],
       "versionPragmas": [
-        ">=0.4.22 <0.9.0"
+        "^0.8.0"
       ],
       "artifacts": [
         "King"
@@ -330,6 +330,148 @@
       ],
       "artifacts": [
         "AggregatorV3Interface"
+      ]
+    },
+    "/Users/richardjamieson/Documents/GitHub/King/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol": {
+      "lastModificationDate": 1664221670221,
+      "contentHash": "3a843b05b85a270e9455e3d2e804e633",
+      "sourceName": "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+      "solcConfig": {
+        "version": "0.8.13",
+        "settings": {
+          "viaIR": true,
+          "optimizer": {
+            "enabled": true,
+            "runs": 1000000,
+            "details": {
+              "peephole": true,
+              "inliner": true,
+              "jumpdestRemover": true,
+              "orderLiterals": true,
+              "deduplicate": true,
+              "cse": true,
+              "constantOptimizer": true,
+              "yul": true
+            }
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../IERC20.sol",
+        "../extensions/draft-IERC20Permit.sol",
+        "../../../utils/Address.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "SafeERC20"
+      ]
+    },
+    "/Users/richardjamieson/Documents/GitHub/King/node_modules/@openzeppelin/contracts/token/ERC20/extensions/draft-IERC20Permit.sol": {
+      "lastModificationDate": 1664221668387,
+      "contentHash": "fb77f144244b9ab12533aa6ce85ef8c5",
+      "sourceName": "@openzeppelin/contracts/token/ERC20/extensions/draft-IERC20Permit.sol",
+      "solcConfig": {
+        "version": "0.8.13",
+        "settings": {
+          "viaIR": true,
+          "optimizer": {
+            "enabled": true,
+            "runs": 1000000,
+            "details": {
+              "peephole": true,
+              "inliner": true,
+              "jumpdestRemover": true,
+              "orderLiterals": true,
+              "deduplicate": true,
+              "cse": true,
+              "constantOptimizer": true,
+              "yul": true
+            }
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IERC20Permit"
+      ]
+    },
+    "/Users/richardjamieson/Documents/GitHub/King/node_modules/@openzeppelin/contracts/utils/Address.sol": {
+      "lastModificationDate": 1664221668146,
+      "contentHash": "c476b3895a94798b88a4bb97399e6dfe",
+      "sourceName": "@openzeppelin/contracts/utils/Address.sol",
+      "solcConfig": {
+        "version": "0.8.13",
+        "settings": {
+          "viaIR": true,
+          "optimizer": {
+            "enabled": true,
+            "runs": 1000000,
+            "details": {
+              "peephole": true,
+              "inliner": true,
+              "jumpdestRemover": true,
+              "orderLiterals": true,
+              "deduplicate": true,
+              "cse": true,
+              "constantOptimizer": true,
+              "yul": true
+            }
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.1"
+      ],
+      "artifacts": [
+        "Address"
       ]
     }
   }

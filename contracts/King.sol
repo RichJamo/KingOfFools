@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.4.22 <0.9.0;
+pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
@@ -35,10 +35,10 @@ contract King {
     receive() external payable {
         require(
             msg.value >= (3 * previous_maximum) / 2,
-            "You don't have enough ether!"
+            "You're not depositing enough ether!"
         ); // check here that msg.sender is payable?
         if (previous_maximum > 0) {
-            king.transfer(msg.value);
+            king.transfer(msg.value); //change this to a call?
         }
         king = payable(msg.sender);
         previous_maximum = msg.value;
@@ -51,19 +51,23 @@ contract King {
                     previous_maximum *
                     uint256(getLatestPrice(MATIC_USD_ORACLE))) /
                     2,
-            "You don't have enough ether!"
+            "You're not depositing enough USDC!"
         ); // check here that msg.sender is payable?
         if (previous_maximum > 0) {
+            previous_maximum =
+                deposit_amount /
+                uint256(getLatestPrice(MATIC_USD_ORACLE));
             IERC20(USDC_ADDRESS).safeTransferFrom(
                 msg.sender,
                 king,
                 deposit_amount
             );
+        } else {
+            previous_maximum =
+                deposit_amount /
+                uint256(getLatestPrice(MATIC_USD_ORACLE));
         }
         king = payable(msg.sender);
-        previous_maximum =
-            deposit_amount /
-            uint256(getLatestPrice(MATIC_USD_ORACLE));
     }
 
     function _king() public view returns (address payable) {
