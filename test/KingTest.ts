@@ -67,7 +67,6 @@ describe(`Testing King contract`, () => {
         // })
         it('Should allow a second deposit of > 1.5 MATIC, sending the deposited amt to user1', async () => {
             let initialUser1Balance = await user1.getBalance();
-            console.log(initialUser1Balance);
             let tx = {
                 to: King.address,
                 // Convert currency unit from ether to wei
