@@ -13,7 +13,11 @@ import type {
   Signer,
   utils,
 } from "ethers";
-import type { FunctionFragment, Result } from "@ethersproject/abi";
+import type {
+  FunctionFragment,
+  Result,
+  EventFragment,
+} from "@ethersproject/abi";
 import type { Listener, Provider } from "@ethersproject/providers";
 import type {
   TypedEventFilter,
@@ -27,22 +31,20 @@ export interface KingInterface extends utils.Interface {
   functions: {
     "MATIC_USD_ORACLE()": FunctionFragment;
     "USDC_ADDRESS()": FunctionFragment;
-    "_king()": FunctionFragment;
     "deposit(uint256)": FunctionFragment;
+    "getKing()": FunctionFragment;
     "getLatestPrice(address)": FunctionFragment;
-    "previous_maximum()": FunctionFragment;
-    "previous_usdc_maximum()": FunctionFragment;
+    "maximumPaid()": FunctionFragment;
   };
 
   getFunction(
     nameOrSignatureOrTopic:
       | "MATIC_USD_ORACLE"
       | "USDC_ADDRESS"
-      | "_king"
       | "deposit"
+      | "getKing"
       | "getLatestPrice"
-      | "previous_maximum"
-      | "previous_usdc_maximum"
+      | "maximumPaid"
   ): FunctionFragment;
 
   encodeFunctionData(
@@ -53,21 +55,17 @@ export interface KingInterface extends utils.Interface {
     functionFragment: "USDC_ADDRESS",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "_king", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "deposit",
     values: [PromiseOrValue<BigNumberish>]
   ): string;
+  encodeFunctionData(functionFragment: "getKing", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "getLatestPrice",
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
-    functionFragment: "previous_maximum",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "previous_usdc_maximum",
+    functionFragment: "maximumPaid",
     values?: undefined
   ): string;
 
@@ -79,23 +77,48 @@ export interface KingInterface extends utils.Interface {
     functionFragment: "USDC_ADDRESS",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "_king", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "deposit", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "getKing", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getLatestPrice",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "previous_maximum",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "previous_usdc_maximum",
+    functionFragment: "maximumPaid",
     data: BytesLike
   ): Result;
 
-  events: {};
+  events: {
+    "EthDeposit(bool,uint256,address)": EventFragment;
+    "UsdcDeposit(uint256,address)": EventFragment;
+  };
+
+  getEvent(nameOrSignatureOrTopic: "EthDeposit"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UsdcDeposit"): EventFragment;
 }
+
+export interface EthDepositEventObject {
+  success: boolean;
+  amount: BigNumber;
+  king: string;
+}
+export type EthDepositEvent = TypedEvent<
+  [boolean, BigNumber, string],
+  EthDepositEventObject
+>;
+
+export type EthDepositEventFilter = TypedEventFilter<EthDepositEvent>;
+
+export interface UsdcDepositEventObject {
+  amount: BigNumber;
+  king: string;
+}
+export type UsdcDepositEvent = TypedEvent<
+  [BigNumber, string],
+  UsdcDepositEventObject
+>;
+
+export type UsdcDepositEventFilter = TypedEventFilter<UsdcDepositEvent>;
 
 export interface King extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -128,87 +151,96 @@ export interface King extends BaseContract {
 
     USDC_ADDRESS(overrides?: CallOverrides): Promise<[string]>;
 
-    _king(overrides?: CallOverrides): Promise<[string]>;
-
     deposit(
-      deposit_amount: PromiseOrValue<BigNumberish>,
+      depositAmount: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    getKing(overrides?: CallOverrides): Promise<[string]>;
+
     getLatestPrice(
-      _oracle_address: PromiseOrValue<string>,
+      oracleAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
-    previous_maximum(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    previous_usdc_maximum(overrides?: CallOverrides): Promise<[BigNumber]>;
+    maximumPaid(overrides?: CallOverrides): Promise<[BigNumber]>;
   };
 
   MATIC_USD_ORACLE(overrides?: CallOverrides): Promise<string>;
 
   USDC_ADDRESS(overrides?: CallOverrides): Promise<string>;
 
-  _king(overrides?: CallOverrides): Promise<string>;
-
   deposit(
-    deposit_amount: PromiseOrValue<BigNumberish>,
+    depositAmount: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  getKing(overrides?: CallOverrides): Promise<string>;
+
   getLatestPrice(
-    _oracle_address: PromiseOrValue<string>,
+    oracleAddress: PromiseOrValue<string>,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  previous_maximum(overrides?: CallOverrides): Promise<BigNumber>;
-
-  previous_usdc_maximum(overrides?: CallOverrides): Promise<BigNumber>;
+  maximumPaid(overrides?: CallOverrides): Promise<BigNumber>;
 
   callStatic: {
     MATIC_USD_ORACLE(overrides?: CallOverrides): Promise<string>;
 
     USDC_ADDRESS(overrides?: CallOverrides): Promise<string>;
 
-    _king(overrides?: CallOverrides): Promise<string>;
-
     deposit(
-      deposit_amount: PromiseOrValue<BigNumberish>,
+      depositAmount: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
 
+    getKing(overrides?: CallOverrides): Promise<string>;
+
     getLatestPrice(
-      _oracle_address: PromiseOrValue<string>,
+      oracleAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    previous_maximum(overrides?: CallOverrides): Promise<BigNumber>;
-
-    previous_usdc_maximum(overrides?: CallOverrides): Promise<BigNumber>;
+    maximumPaid(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
-  filters: {};
+  filters: {
+    "EthDeposit(bool,uint256,address)"(
+      success?: null,
+      amount?: null,
+      king?: null
+    ): EthDepositEventFilter;
+    EthDeposit(
+      success?: null,
+      amount?: null,
+      king?: null
+    ): EthDepositEventFilter;
+
+    "UsdcDeposit(uint256,address)"(
+      amount?: null,
+      king?: null
+    ): UsdcDepositEventFilter;
+    UsdcDeposit(amount?: null, king?: null): UsdcDepositEventFilter;
+  };
 
   estimateGas: {
     MATIC_USD_ORACLE(overrides?: CallOverrides): Promise<BigNumber>;
 
     USDC_ADDRESS(overrides?: CallOverrides): Promise<BigNumber>;
 
-    _king(overrides?: CallOverrides): Promise<BigNumber>;
-
     deposit(
-      deposit_amount: PromiseOrValue<BigNumberish>,
+      depositAmount: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    getKing(overrides?: CallOverrides): Promise<BigNumber>;
+
     getLatestPrice(
-      _oracle_address: PromiseOrValue<string>,
+      oracleAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    previous_maximum(overrides?: CallOverrides): Promise<BigNumber>;
-
-    previous_usdc_maximum(overrides?: CallOverrides): Promise<BigNumber>;
+    maximumPaid(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -216,22 +248,18 @@ export interface King extends BaseContract {
 
     USDC_ADDRESS(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    _king(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     deposit(
-      deposit_amount: PromiseOrValue<BigNumberish>,
+      depositAmount: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    getKing(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     getLatestPrice(
-      _oracle_address: PromiseOrValue<string>,
+      oracleAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    previous_maximum(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    previous_usdc_maximum(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    maximumPaid(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

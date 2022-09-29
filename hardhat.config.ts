@@ -22,7 +22,7 @@ if (!mnemonic) {
   throw new Error("Please set your MNEMONIC in a .env file");
 }
 // Ensure that we have archive mainnet node URL set as an environment variable
-const archiveMainnetNodeURL = process.env.PRIVATE_RPC;
+const archiveMainnetNodeURL = process.env.PRIVATE_RPC; //GOERLI_RPC;
 if (!archiveMainnetNodeURL) {
   throw new Error("Please set your PRIVATE_RPC in a .env file");
 }
@@ -53,7 +53,7 @@ const config: HardhatUserConfig = {
       },
       forking: {
         url: archiveMainnetNodeURL,
-        blockNumber: 25326200,
+        blockNumber: 25326200, //7676208,
       },
       chainId: chainIds.hardhat,
       hardfork: "london",
@@ -65,7 +65,7 @@ const config: HardhatUserConfig = {
   },
   solidity: {
     compilers: [{
-      version: "0.8.13",
+      version: "0.8.7",
       settings: {
         viaIR: true,
         optimizer: {
@@ -84,28 +84,28 @@ const config: HardhatUserConfig = {
         },
       },
     }],
-    overrides: {
-      "contracts/VaultHealer.sol": {
-        version: "0.8.13",
-        settings: {
-          viaIR: true,
-          optimizer: {
-            enabled: true,
-            runs: 1,
-            details: {
-              peephole: true,
-              inliner: true,
-              jumpdestRemover: true,
-              orderLiterals: true,
-              deduplicate: true,
-              cse: true,
-              constantOptimizer: true,
-              yul: true
-            }
-          },
-        },
-      }
-    },
+    // overrides: {
+    //   "contracts/VaultHealer.sol": {
+    //     version: "0.8.13",
+    //     settings: {
+    //       viaIR: true,
+    //       optimizer: {
+    //         enabled: true,
+    //         runs: 1,
+    //         details: {
+    //           peephole: true,
+    //           inliner: true,
+    //           jumpdestRemover: true,
+    //           orderLiterals: true,
+    //           deduplicate: true,
+    //           cse: true,
+    //           constantOptimizer: true,
+    //           yul: true
+    //         }
+    //       },
+    //     },
+    //   }
+    // },
   },
   mocha: {
     timeout: 90000,

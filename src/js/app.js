@@ -86,7 +86,6 @@ async function startApp(provider) {
       method: "eth_accounts",
     });
     await walletButtonStateHandler();
-    await displayUSDBalances();
 
   });
 
@@ -129,9 +128,9 @@ async function startApp(provider) {
 
   depositButton.addEventListener('click', async () => {
     var depositAmountUSDC = $("#depositAmountUSDC").val(); //put in some checks here? positive number, between x and y, user has enough funds...
-    console.log(`Depositing ${depositAmountUSDC} of USDC to the SMEB account`);
+    console.log(`Depositing ${depositAmountUSDC} of USDC`);
     $("#swapStarted").css("display", "inline-block");
-    $("#swapStarted").text(`Depositing ${depositAmountUSDC} of USDC to the SMEB account`);
+    $("#swapStarted").text(`Depositing ${depositAmountUSDC} of USDC`);
     var estimatedGasLimit = await dappContract_signer.estimateGas.deposit(depositAmountUSDC * 10 ** 6);
     let tx = await dappContract_signer.deposit(depositAmountUSDC * 10 ** 6, { gasLimit: parseInt(estimatedGasLimit * 1.2) });
     let result = await tx.wait();

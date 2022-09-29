@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-// import { IUniRouter02_abi } from './abi_files/IUniRouter02_abi.js';
-// import { token_abi } from './abi_files/token_abi.js';
+import { IUniRouter02_abi } from './abi_files/IUniRouter02_abi.js';
+import { token_abi } from './abi_files/token_abi.js';
 import { Contract } from "ethers";
 
 const ROUTER = "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff";
@@ -30,11 +30,11 @@ describe(`Testing King contract`, () => {
         }
 
         //create a router to swap into USDC
-        // router = await ethers.getContractAt(IUniRouter02_abi, ROUTER);
-        // WNATIVE = await router.WETH();
+        router = await ethers.getContractAt(IUniRouter02_abi, ROUTER);
+        WNATIVE = await router.WETH();
         // await router.swapExactETHForTokens(0, [WNATIVE, USDC], user1.address, Date.now() + 900, { value: ethers.utils.parseEther("1000") }) //USDC 6 decimals
-        // await router.connect(user2).swapExactETHForTokens(0, [WNATIVE, USDC], user2.address, Date.now() + 900, { value: ethers.utils.parseEther("1000") }) //USDC 6 decimals
-        // usdc = await ethers.getContractAt(token_abi, USDC);
+        await router.connect(user3).swapExactETHForTokens(0, [WNATIVE, USDC], user3.address, Date.now() + 900, { value: ethers.utils.parseEther("1000") }) //USDC 6 decimals
+        usdc = await ethers.getContractAt(token_abi, USDC);
         // receiptToken = await ethers.getContractAt(token_abi, King.address);
     });
 
@@ -44,7 +44,7 @@ describe(`Testing King contract`, () => {
             let tx = {
                 to: King.address,
                 // Convert currency unit from ether to wei
-                value: ethers.utils.parseEther("1")
+                value: ethers.utils.parseEther("100")
             }
             // Send a transaction
             await user1.sendTransaction(tx);
@@ -52,7 +52,7 @@ describe(`Testing King contract`, () => {
             expect(await ethers.provider.getBalance(King.address)).to.be.gt(0);
         })
         it('Should have user1 as king after first deposit', async () => {
-            expect(await King._king()).to.equal(user1.address);
+            expect(await King.getKing()).to.equal(user1.address);
         })
         // it('Should not allow a second deposit of less than 1.5 MATIC', async () => {
         //     let tx = {
@@ -63,14 +63,14 @@ describe(`Testing King contract`, () => {
         //     // Send a transaction
         //     await user2.sendTransaction(tx);
 
-        //     expect(await King._king()).to.equal(user1.address);
+        //     expect(await King.getKing()).to.equal(user1.address);
         // })
         it('Should allow a second deposit of > 1.5 MATIC, sending the deposited amt to user1', async () => {
             let initialUser1Balance = await user1.getBalance();
             let tx = {
                 to: King.address,
                 // Convert currency unit from ether to wei
-                value: ethers.utils.parseEther("2")
+                value: ethers.utils.parseEther("200")
             }
             // Send a transaction
             await user2.sendTransaction(tx);
@@ -79,14 +79,15 @@ describe(`Testing King contract`, () => {
             expect(finalUser1Balance).to.be.gt(initialUser1Balance);
         })
         it('Should have user 2 as King after second deposit', async () => {
-            expect(await King._king()).to.equal(user2.address);
+            expect(await King.getKing()).to.equal(user2.address);
         })
-        // it('Should give portfolio a non-zero weth balance', async () => {
-        //     var weth = await ethers.getContractAt(token_abi, WETH_ADDRESS);
-        //     var wethBalance = await weth.balanceOf(King.address);
-
-        //     expect(wethBalance).to.be.gt(0);
-        // })
+        it('Should take a USDC deposit', async () => {
+            //approve the transaction
+            let usdcAmount = 10000000;
+            await usdc.connect(user3).approve(King.address, usdcAmount);
+            await King.connect(user3).deposit(usdcAmount);
+            expect(await King.getKing()).to.equal(user3.address);
+        })
         // it('Should give portfolio a non-zero wbtc balance', async () => {
         //     var wbtc = await ethers.getContractAt(token_abi, WBTC_ADDRESS);
         //     var wbtcBalance = await wbtc.balanceOf(King.address);
