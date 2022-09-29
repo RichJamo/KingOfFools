@@ -11,10 +11,15 @@ contract King {
     address public constant MATIC_USD_ORACLE =
         0xAB594600376Ec9fD91F8e885dADF0CE036862dE0;
     address payable king;
+    address public owner;
     uint256 public maximumPaid;
     bool sent;
     event EthDeposit(bool success, uint256 amount, address king);
     event UsdcDeposit(uint256 amount, address king);
+
+    constructor() {
+        owner = msg.sender;
+    }
 
     /**
      * Returns the latest price
@@ -79,7 +84,17 @@ contract King {
         return king;
     }
 
-    function withdraw(uint256 amount) payable {
-        (sent, ) = king.call{value: msg.value}("");
+    function emergencyWithdraw() public payable {
+        require(msg.sender == owner);
+        uint256 ethBalance = address(this).balance;
+        if (ethBalance > 0) {
+            (sent, ) = msg.sender.call{value: address(this).balance}("");
+            require(sent, "Error in withdrawal");
+        }
+        uint256 usdcBalance = IERC20(USDC_ADDRESS).balanceOf(address(this));
+        if (usdcBalance > 0) {
+            IERC20(USDC_ADDRESS).approve(msg.sender, usdcBalance);
+            IERC20(USDC_ADDRESS).safeTransfer(msg.sender, usdcBalance);
+        }
     }
 }

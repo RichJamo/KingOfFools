@@ -9,6 +9,7 @@ import type {
   CallOverrides,
   ContractTransaction,
   Overrides,
+  PayableOverrides,
   PopulatedTransaction,
   Signer,
   utils,
@@ -32,9 +33,11 @@ export interface KingInterface extends utils.Interface {
     "MATIC_USD_ORACLE()": FunctionFragment;
     "USDC_ADDRESS()": FunctionFragment;
     "deposit(uint256)": FunctionFragment;
+    "emergencyWithdraw()": FunctionFragment;
     "getKing()": FunctionFragment;
     "getLatestPrice(address)": FunctionFragment;
     "maximumPaid()": FunctionFragment;
+    "owner()": FunctionFragment;
   };
 
   getFunction(
@@ -42,9 +45,11 @@ export interface KingInterface extends utils.Interface {
       | "MATIC_USD_ORACLE"
       | "USDC_ADDRESS"
       | "deposit"
+      | "emergencyWithdraw"
       | "getKing"
       | "getLatestPrice"
       | "maximumPaid"
+      | "owner"
   ): FunctionFragment;
 
   encodeFunctionData(
@@ -59,6 +64,10 @@ export interface KingInterface extends utils.Interface {
     functionFragment: "deposit",
     values: [PromiseOrValue<BigNumberish>]
   ): string;
+  encodeFunctionData(
+    functionFragment: "emergencyWithdraw",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "getKing", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "getLatestPrice",
@@ -68,6 +77,7 @@ export interface KingInterface extends utils.Interface {
     functionFragment: "maximumPaid",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
 
   decodeFunctionResult(
     functionFragment: "MATIC_USD_ORACLE",
@@ -78,6 +88,10 @@ export interface KingInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "deposit", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "emergencyWithdraw",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "getKing", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getLatestPrice",
@@ -87,6 +101,7 @@ export interface KingInterface extends utils.Interface {
     functionFragment: "maximumPaid",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
 
   events: {
     "EthDeposit(bool,uint256,address)": EventFragment;
@@ -156,6 +171,10 @@ export interface King extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    emergencyWithdraw(
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     getKing(overrides?: CallOverrides): Promise<[string]>;
 
     getLatestPrice(
@@ -164,6 +183,8 @@ export interface King extends BaseContract {
     ): Promise<[BigNumber]>;
 
     maximumPaid(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    owner(overrides?: CallOverrides): Promise<[string]>;
   };
 
   MATIC_USD_ORACLE(overrides?: CallOverrides): Promise<string>;
@@ -175,6 +196,10 @@ export interface King extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  emergencyWithdraw(
+    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   getKing(overrides?: CallOverrides): Promise<string>;
 
   getLatestPrice(
@@ -183,6 +208,8 @@ export interface King extends BaseContract {
   ): Promise<BigNumber>;
 
   maximumPaid(overrides?: CallOverrides): Promise<BigNumber>;
+
+  owner(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
     MATIC_USD_ORACLE(overrides?: CallOverrides): Promise<string>;
@@ -194,6 +221,8 @@ export interface King extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    emergencyWithdraw(overrides?: CallOverrides): Promise<void>;
+
     getKing(overrides?: CallOverrides): Promise<string>;
 
     getLatestPrice(
@@ -202,6 +231,8 @@ export interface King extends BaseContract {
     ): Promise<BigNumber>;
 
     maximumPaid(overrides?: CallOverrides): Promise<BigNumber>;
+
+    owner(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
@@ -233,6 +264,10 @@ export interface King extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    emergencyWithdraw(
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     getKing(overrides?: CallOverrides): Promise<BigNumber>;
 
     getLatestPrice(
@@ -241,6 +276,8 @@ export interface King extends BaseContract {
     ): Promise<BigNumber>;
 
     maximumPaid(overrides?: CallOverrides): Promise<BigNumber>;
+
+    owner(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -253,6 +290,10 @@ export interface King extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    emergencyWithdraw(
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     getKing(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getLatestPrice(
@@ -261,5 +302,7 @@ export interface King extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     maximumPaid(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }
