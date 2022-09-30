@@ -15,9 +15,7 @@
   <link rel="stylesheet" href="./src/css/metamask.css" type="text/css">
 
   <script src="./src/token_abi.js"></script>
-  <script src="./src/chainlink_abi.js"></script>
   <script src="./src/router_abi.js"></script>
-  <script src="./src/router_abi_QS.js"></script>
   <script src="./src/js/ethers.umd.min.js" type="application/javascript"></script>
   <script src="./src/king_dapp_abi.js"></script>
   <!-- <script src="@metamask/onboarding"></script> -->
@@ -38,8 +36,13 @@
           <button class="btn btn-primary btn-lg btn-block mb-3" id="connectButton">Connect Wallet</button>
         </div>
         <div class="approve-box btn-holder">
+          <p> You need to register your intention to deposit, and then make your deposit within 3 minutes of registering
+          </p>
+          <button type="value" id="registerButton"> Register </button>
+        </div>
+        <div class="approve-box btn-holder">
           <input placeholder="ETH deposit amount" type="value" id="depositAmountETH">
-          <button type="value" id="depositETHButton"> Deposit </button> <!-- need to disable this until approved?-->
+          <button type="value" id="depositETHButton"> Deposit </button>
         </div>
         <div class="approve-box btn-holder">
           <input placeholder="USDC deposit amount" type="value" id="depositAmountUSDC">

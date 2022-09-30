@@ -1,5 +1,5 @@
 const USDC_ADDRESS = "0x2791bca1f2de4661ed88a30c99a7a9449aa84174";
-const KING_DAPP_ADDRESS = "0xbb1472776aabdFaB4c26531363C44d407BAA699A"; //THIS IS JUST A PLACEHOLDER!
+const KING_DAPP_ADDRESS = "0x8588170Bfbc4bB3887426B51FA0C8819EA33560a";
 var user;
 
 const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -7,6 +7,7 @@ const signer = await provider.getSigner()
 
 const dappContract_signer = new ethers.Contract(KING_DAPP_ADDRESS, king_dapp_abi, signer);
 const dappContract_provider = new ethers.Contract(KING_DAPP_ADDRESS, king_dapp_abi, provider);
+var secretInput;
 
 /*****************************************/
 /* Detect the MetaMask Ethereum provider */
@@ -58,6 +59,7 @@ async function checkNetworkId(_provider) {
 async function startApp(provider) {
   const connectButton = document.getElementById('connectButton');
   const depositETHButton = document.getElementById('depositETHButton');
+  const registerButton = document.getElementById('registerButton');
 
   const depositButton = document.getElementById('depositButton');
   const approveButton = document.getElementById('approveButton');
@@ -91,19 +93,26 @@ async function startApp(provider) {
 
   depositETHButton.addEventListener('click', async () => {
     var depositAmountETH = $("#depositAmountETH").val(); //put in some checks here? positive number, between x and y, user has enough funds...
-    // var estimatedGasLimit = await dappContract_signer.estimateGas.sendTransaction({
+    console.log(secretInput)
+    // var estimatedGasLimit = await provider.sendTransaction({
     //   to: KING_DAPP_ADDRESS,
+    //   from: user,
     //   // Convert currency unit from ether to wei
     //   value: depositAmountETH * 10 ** 18,
-    //   gasLimit: parseInt(estimatedGasLimit * 1.2)
+    //   data: ethers.utils.hexZeroPad(secretInput, 32)
     // });
-    let tx = await dappContract_signer.sendTransaction({
-      to: KING_DAPP_ADDRESS,
-      // Convert currency unit from ether to wei
-      value: depositAmountETH * 10 ** 18
-    });
 
+
+    let tx = await signer.sendTransaction({
+      to: KING_DAPP_ADDRESS,
+      // from: user,
+      // Convert currency unit from ether to wei
+      value: ethers.utils.parseEther(depositAmountETH),
+      data: ethers.utils.hexZeroPad(secretInput, 32)
+    });
+    console.log("sent")
     let result = await tx.wait();
+    console.log(result)
     if (result) {
       $("#swapStarted").css("display", "inline-block");
       $("#swapStarted").text(`Deposit successful`);
@@ -126,13 +135,27 @@ async function startApp(provider) {
     }
   })
 
+  registerButton.addEventListener('click', async () => {
+    secretInput = Math.floor(Math.random() * 10000); //put in some checks here? positive number, between x and y, user has enough funds...
+    var commitment = ethers.utils.solidityKeccak256(["uint256", "address"], [secretInput, user])
+    let tx = await dappContract_signer.register(commitment);
+    let result = await tx.wait();
+    if (result) {
+      $("#swapStarted").css("display", "inline-block");
+      $("#swapStarted").text(`Registration done`);
+      setTimeout(function () {
+        $("#swapStarted").css("display", "none");
+      }, (3 * 1000));
+    }
+  })
+
   depositButton.addEventListener('click', async () => {
     var depositAmountUSDC = $("#depositAmountUSDC").val(); //put in some checks here? positive number, between x and y, user has enough funds...
     console.log(`Depositing ${depositAmountUSDC} of USDC`);
     $("#swapStarted").css("display", "inline-block");
     $("#swapStarted").text(`Depositing ${depositAmountUSDC} of USDC`);
-    var estimatedGasLimit = await dappContract_signer.estimateGas.deposit(depositAmountUSDC * 10 ** 6);
-    let tx = await dappContract_signer.deposit(depositAmountUSDC * 10 ** 6, { gasLimit: parseInt(estimatedGasLimit * 1.2) });
+    var estimatedGasLimit = await dappContract_signer.estimateGas.deposit(depositAmountUSDC * 10 ** 6, ethers.utils.hexZeroPad(secretInput, 32));
+    let tx = await dappContract_signer.deposit(depositAmountUSDC * 10 ** 6, ethers.utils.hexZeroPad(secretInput, 32), { gasLimit: parseInt(estimatedGasLimit * 1.2) });
     let result = await tx.wait();
     if (result) {
       $("#swapStarted").css("display", "inline-block");

@@ -16,7 +16,7 @@ contract King is Ownable {
     bool sent;
     bytes32 commitment;
     uint256 timeout;
-    uint256 constant ONE_HOUR = 60 * 60;
+    uint256 constant ONE_MINUTE = 0; //60;
     event EthDeposit(bool success, uint256 amount, address king);
     event UsdcDeposit(uint256 amount, address king);
 
@@ -58,7 +58,7 @@ contract King is Ownable {
             require(block.timestamp > timeout, "Wait");
         }
         commitment = _commitment;
-        timeout = block.timestamp + ONE_HOUR;
+        timeout = block.timestamp + ONE_MINUTE;
     }
 
     function deposit(uint256 depositAmount, bytes32 _secret) external {
@@ -95,7 +95,7 @@ contract King is Ownable {
         return king;
     }
 
-    function emergencyWithdraw() public payable onlyOwner {
+    function emergencyWithdraw() external payable onlyOwner {
         uint256 ethBalance = address(this).balance;
         if (ethBalance > 0) {
             (sent, ) = msg.sender.call{value: address(this).balance}("");

@@ -72,9 +72,11 @@ describe(`Testing King contract`, () => {
         // })
         it('Should allow a second deposit of > 1.5 MATIC, sending the deposited amt to user1', async () => {
             let secretInput2 = 1234
+            console.log(typeof (secretInput2))
             await King.connect(user2).register(ethers.utils.solidityKeccak256(["uint256", "address"], [secretInput2, user2.address]));
             let secret2 = ethers.utils.hexZeroPad(secretInput2, 32);
-
+            console.log(secret2)
+            console.log(typeof (secret2))
             let initialUser1Balance = await user1.getBalance();
             let tx = {
                 to: King.address,
