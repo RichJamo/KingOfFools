@@ -34,15 +34,15 @@ contract King is Ownable {
     }
 
     //must take USDC as well...
-    receive() external payable {
+    fallback() external payable {
         require(
             msg.value >= (3 * maximumPaid) / 2,
             "You're not depositing enough ether!"
         );
-        // require(
-        //     commitment == keccak256(abi.encodePacked(_secret, msg.sender)),
-        //     "Mismatch"
-        // );
+        require(
+            commitment == keccak256(abi.encodePacked(msg.data, msg.sender)),
+            "Mismatch"
+        );
         if (maximumPaid > 0) {
             maximumPaid = msg.value;
             (sent, ) = king.call{value: msg.value}("");
