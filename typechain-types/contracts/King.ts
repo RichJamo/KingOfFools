@@ -32,12 +32,14 @@ export interface KingInterface extends utils.Interface {
   functions: {
     "MATIC_USD_ORACLE()": FunctionFragment;
     "USDC_ADDRESS()": FunctionFragment;
-    "deposit(uint256)": FunctionFragment;
+    "deposit(uint256,bytes32)": FunctionFragment;
     "emergencyWithdraw()": FunctionFragment;
     "getKing()": FunctionFragment;
-    "getLatestPrice(address)": FunctionFragment;
     "maximumPaid()": FunctionFragment;
     "owner()": FunctionFragment;
+    "register(bytes32)": FunctionFragment;
+    "renounceOwnership()": FunctionFragment;
+    "transferOwnership(address)": FunctionFragment;
   };
 
   getFunction(
@@ -47,9 +49,11 @@ export interface KingInterface extends utils.Interface {
       | "deposit"
       | "emergencyWithdraw"
       | "getKing"
-      | "getLatestPrice"
       | "maximumPaid"
       | "owner"
+      | "register"
+      | "renounceOwnership"
+      | "transferOwnership"
   ): FunctionFragment;
 
   encodeFunctionData(
@@ -62,7 +66,7 @@ export interface KingInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "deposit",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
     functionFragment: "emergencyWithdraw",
@@ -70,14 +74,22 @@ export interface KingInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "getKing", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "getLatestPrice",
-    values: [PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
     functionFragment: "maximumPaid",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "register",
+    values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "renounceOwnership",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "transferOwnership",
+    values: [PromiseOrValue<string>]
+  ): string;
 
   decodeFunctionResult(
     functionFragment: "MATIC_USD_ORACLE",
@@ -94,21 +106,28 @@ export interface KingInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "getKing", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "getLatestPrice",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "maximumPaid",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "register", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "renounceOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "transferOwnership",
+    data: BytesLike
+  ): Result;
 
   events: {
     "EthDeposit(bool,uint256,address)": EventFragment;
+    "OwnershipTransferred(address,address)": EventFragment;
     "UsdcDeposit(uint256,address)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "EthDeposit"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UsdcDeposit"): EventFragment;
 }
 
@@ -123,6 +142,18 @@ export type EthDepositEvent = TypedEvent<
 >;
 
 export type EthDepositEventFilter = TypedEventFilter<EthDepositEvent>;
+
+export interface OwnershipTransferredEventObject {
+  previousOwner: string;
+  newOwner: string;
+}
+export type OwnershipTransferredEvent = TypedEvent<
+  [string, string],
+  OwnershipTransferredEventObject
+>;
+
+export type OwnershipTransferredEventFilter =
+  TypedEventFilter<OwnershipTransferredEvent>;
 
 export interface UsdcDepositEventObject {
   amount: BigNumber;
@@ -168,6 +199,7 @@ export interface King extends BaseContract {
 
     deposit(
       depositAmount: PromiseOrValue<BigNumberish>,
+      _secret: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -177,14 +209,23 @@ export interface King extends BaseContract {
 
     getKing(overrides?: CallOverrides): Promise<[string]>;
 
-    getLatestPrice(
-      oracleAddress: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
     maximumPaid(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
+
+    register(
+      _commitment: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    renounceOwnership(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    transferOwnership(
+      newOwner: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
   };
 
   MATIC_USD_ORACLE(overrides?: CallOverrides): Promise<string>;
@@ -193,6 +234,7 @@ export interface King extends BaseContract {
 
   deposit(
     depositAmount: PromiseOrValue<BigNumberish>,
+    _secret: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -202,14 +244,23 @@ export interface King extends BaseContract {
 
   getKing(overrides?: CallOverrides): Promise<string>;
 
-  getLatestPrice(
-    oracleAddress: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   maximumPaid(overrides?: CallOverrides): Promise<BigNumber>;
 
   owner(overrides?: CallOverrides): Promise<string>;
+
+  register(
+    _commitment: PromiseOrValue<BytesLike>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  renounceOwnership(
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  transferOwnership(
+    newOwner: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
 
   callStatic: {
     MATIC_USD_ORACLE(overrides?: CallOverrides): Promise<string>;
@@ -218,6 +269,7 @@ export interface King extends BaseContract {
 
     deposit(
       depositAmount: PromiseOrValue<BigNumberish>,
+      _secret: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -225,14 +277,21 @@ export interface King extends BaseContract {
 
     getKing(overrides?: CallOverrides): Promise<string>;
 
-    getLatestPrice(
-      oracleAddress: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     maximumPaid(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<string>;
+
+    register(
+      _commitment: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    renounceOwnership(overrides?: CallOverrides): Promise<void>;
+
+    transferOwnership(
+      newOwner: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
   };
 
   filters: {
@@ -246,6 +305,15 @@ export interface King extends BaseContract {
       amount?: null,
       king?: null
     ): EthDepositEventFilter;
+
+    "OwnershipTransferred(address,address)"(
+      previousOwner?: PromiseOrValue<string> | null,
+      newOwner?: PromiseOrValue<string> | null
+    ): OwnershipTransferredEventFilter;
+    OwnershipTransferred(
+      previousOwner?: PromiseOrValue<string> | null,
+      newOwner?: PromiseOrValue<string> | null
+    ): OwnershipTransferredEventFilter;
 
     "UsdcDeposit(uint256,address)"(
       amount?: null,
@@ -261,6 +329,7 @@ export interface King extends BaseContract {
 
     deposit(
       depositAmount: PromiseOrValue<BigNumberish>,
+      _secret: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -270,14 +339,23 @@ export interface King extends BaseContract {
 
     getKing(overrides?: CallOverrides): Promise<BigNumber>;
 
-    getLatestPrice(
-      oracleAddress: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     maximumPaid(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
+
+    register(
+      _commitment: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    renounceOwnership(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    transferOwnership(
+      newOwner: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -287,6 +365,7 @@ export interface King extends BaseContract {
 
     deposit(
       depositAmount: PromiseOrValue<BigNumberish>,
+      _secret: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -296,13 +375,22 @@ export interface King extends BaseContract {
 
     getKing(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    getLatestPrice(
-      oracleAddress: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     maximumPaid(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    register(
+      _commitment: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    renounceOwnership(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    transferOwnership(
+      newOwner: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
   };
 }

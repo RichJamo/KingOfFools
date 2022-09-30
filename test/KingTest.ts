@@ -83,9 +83,16 @@ describe(`Testing King contract`, () => {
         })
         it('Should take a USDC deposit', async () => {
             //approve the transaction
-            let usdcAmount = 10000000;
+            let usdcAmount = 1000000000;
+            let secretInput = 1234
             await usdc.connect(user3).approve(King.address, usdcAmount);
-            await King.connect(user3).deposit(usdcAmount);
+
+            await King.connect(user3).register(ethers.utils.solidityKeccak256(["uint256", "address"], [secretInput, user3.address]));
+
+            let secret = ethers.utils.hexZeroPad(secretInput, 32);
+
+            await King.connect(user3).deposit(usdcAmount, secret);
+
             expect(await King.getKing()).to.equal(user3.address);
         })
         // it('Should give portfolio a non-zero wbtc balance', async () => {
