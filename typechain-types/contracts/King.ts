@@ -39,6 +39,7 @@ export interface KingInterface extends utils.Interface {
     "owner()": FunctionFragment;
     "register(bytes32)": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
+    "setGasAllocatedForKingPayment(uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
   };
 
@@ -53,6 +54,7 @@ export interface KingInterface extends utils.Interface {
       | "owner"
       | "register"
       | "renounceOwnership"
+      | "setGasAllocatedForKingPayment"
       | "transferOwnership"
   ): FunctionFragment;
 
@@ -87,6 +89,10 @@ export interface KingInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "setGasAllocatedForKingPayment",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "transferOwnership",
     values: [PromiseOrValue<string>]
   ): string;
@@ -113,6 +119,10 @@ export interface KingInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "register", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setGasAllocatedForKingPayment",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -222,6 +232,11 @@ export interface King extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    setGasAllocatedForKingPayment(
+      gasAmount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     transferOwnership(
       newOwner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -257,6 +272,11 @@ export interface King extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  setGasAllocatedForKingPayment(
+    gasAmount: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   transferOwnership(
     newOwner: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -287,6 +307,11 @@ export interface King extends BaseContract {
     ): Promise<void>;
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
+
+    setGasAllocatedForKingPayment(
+      gasAmount: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     transferOwnership(
       newOwner: PromiseOrValue<string>,
@@ -352,6 +377,11 @@ export interface King extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    setGasAllocatedForKingPayment(
+      gasAmount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     transferOwnership(
       newOwner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -385,6 +415,11 @@ export interface King extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     renounceOwnership(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setGasAllocatedForKingPayment(
+      gasAmount: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

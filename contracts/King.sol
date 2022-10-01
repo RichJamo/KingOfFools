@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.7;
+pragma solidity 0.8.17;
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
@@ -13,10 +13,10 @@ contract King is Ownable {
         0xAB594600376Ec9fD91F8e885dADF0CE036862dE0;
     address payable king;
     uint256 public maximumPaid;
-    bool sent;
     bytes32 commitment;
     uint256 timeout;
-    uint256 constant ONE_MINUTE = 0; //60;
+    uint256 constant ONE_MINUTE = 60;
+    uint256 gasAllocatedForKingPayment;
     event EthDeposit(bool success, uint256 amount, address king);
     event UsdcDeposit(uint256 amount, address king);
 
@@ -33,6 +33,13 @@ contract King is Ownable {
         return price;
     }
 
+    function setGasAllocatedForKingPayment(uint256 gasAmount)
+        external
+        onlyOwner
+    {
+        gasAllocatedForKingPayment = gasAmount;
+    }
+
     //must take USDC as well...
     fallback() external payable {
         require(
@@ -41,21 +48,30 @@ contract King is Ownable {
         );
         require(
             commitment == keccak256(abi.encodePacked(msg.data, msg.sender)),
-            "Mismatch"
+            "Sorry, you're not the currently registered depositor."
         );
         if (maximumPaid > 0) {
             maximumPaid = msg.value;
-            (sent, ) = king.call{value: msg.value}("");
-            // deliberately not using return value
+            (bool sent, ) = king.call{
+                value: msg.value,
+                gas: gasAllocatedForKingPayment
+            }("");
+            emit EthDeposit(sent, msg.value, msg.sender);
             // if payer cannot receive ETH, that's there bad, and we don't let it halt our protocol
         } else maximumPaid = msg.value;
         king = payable(msg.sender);
-        emit EthDeposit(sent, msg.value, msg.sender);
+    }
+
+    receive() external payable {
+        revert("Sorry, you're not the currently registered depositor.");
     }
 
     function register(bytes32 _commitment) external {
         if (commitment != bytes32(0)) {
-            require(block.timestamp > timeout, "Wait");
+            require(
+                block.timestamp > timeout,
+                "Someone else has registered to deposit, please wait and try again in 3 minutes"
+            );
         }
         commitment = _commitment;
         timeout = block.timestamp + ONE_MINUTE;
@@ -71,7 +87,7 @@ contract King is Ownable {
         );
         require(
             commitment == keccak256(abi.encodePacked(_secret, msg.sender)),
-            "Mismatch"
+            "Sorry, you're not the currently registered depositor."
         );
         if (maximumPaid > 0) {
             maximumPaid =
@@ -82,6 +98,7 @@ contract King is Ownable {
                 king,
                 depositAmount
             );
+            // this function will revert if transfer not possible
         } else {
             maximumPaid =
                 (depositAmount * 100) /
@@ -98,7 +115,7 @@ contract King is Ownable {
     function emergencyWithdraw() external payable onlyOwner {
         uint256 ethBalance = address(this).balance;
         if (ethBalance > 0) {
-            (sent, ) = msg.sender.call{value: address(this).balance}("");
+            (bool sent, ) = msg.sender.call{value: address(this).balance}("");
             require(sent, "Error in withdrawal");
         }
         uint256 usdcBalance = IERC20(USDC_ADDRESS).balanceOf(address(this));

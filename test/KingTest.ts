@@ -78,6 +78,7 @@ describe(`Testing King contract`, () => {
             console.log(secret2)
             console.log(typeof (secret2))
             let initialUser1Balance = await user1.getBalance();
+            console.log(ethers.utils.formatEther(initialUser1Balance));
             let tx = {
                 to: King.address,
                 // Convert currency unit from ether to wei
@@ -87,6 +88,7 @@ describe(`Testing King contract`, () => {
             // Send a transaction
             await user2.sendTransaction(tx);
             let finalUser1Balance = await user1.getBalance();
+            console.log(ethers.utils.formatEther(finalUser1Balance));
 
             expect(finalUser1Balance).to.be.gt(initialUser1Balance);
         })

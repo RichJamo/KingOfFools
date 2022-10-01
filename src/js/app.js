@@ -1,5 +1,5 @@
+const KING_DAPP_ADDRESS = "0xc240222f1eE517422a867Daad9E919452a938DBC";
 const USDC_ADDRESS = "0x2791bca1f2de4661ed88a30c99a7a9449aa84174";
-const KING_DAPP_ADDRESS = "0x8588170Bfbc4bB3887426B51FA0C8819EA33560a";
 var user;
 
 const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -61,7 +61,7 @@ async function startApp(provider) {
   const depositETHButton = document.getElementById('depositETHButton');
   const registerButton = document.getElementById('registerButton');
 
-  const depositButton = document.getElementById('depositButton');
+  const depositUsdcButton = document.getElementById('depositUsdcButton');
   const approveButton = document.getElementById('approveButton');
 
   await walletButtonStateHandler();
@@ -92,6 +92,12 @@ async function startApp(provider) {
   });
 
   depositETHButton.addEventListener('click', async () => {
+    // secretInput = 1234;
+    if (typeof secretInput === 'undefined') {
+      $("#swapStarted").css("display", "inline-block");
+      $("#swapStarted").text(`Please register before depositing`);
+      return;
+    }
     var depositAmountETH = $("#depositAmountETH").val(); //put in some checks here? positive number, between x and y, user has enough funds...
     console.log(secretInput)
     // var estimatedGasLimit = await provider.sendTransaction({
@@ -101,18 +107,24 @@ async function startApp(provider) {
     //   value: depositAmountETH * 10 ** 18,
     //   data: ethers.utils.hexZeroPad(secretInput, 32)
     // });
-
-
-    let tx = await signer.sendTransaction({
-      to: KING_DAPP_ADDRESS,
-      // from: user,
-      // Convert currency unit from ether to wei
-      value: ethers.utils.parseEther(depositAmountETH),
-      data: ethers.utils.hexZeroPad(secretInput, 32)
-    });
-    console.log("sent")
+    var tx;
+    try {
+      tx = await signer.sendTransaction({
+        to: KING_DAPP_ADDRESS,
+        // from: user,
+        // Convert currency unit from ether to wei
+        value: ethers.utils.parseEther(depositAmountETH),
+        data: ethers.utils.hexZeroPad(secretInput, 32)
+      });
+    } catch (err) {
+      $("#swapStarted").css("display", "inline-block");
+      $("#swapStarted").text(err["data"]["message"]);
+      setTimeout(function () {
+        $("#swapStarted").css("display", "none");
+      }, (5 * 1000));
+      return;
+    }
     let result = await tx.wait();
-    console.log(result)
     if (result) {
       $("#swapStarted").css("display", "inline-block");
       $("#swapStarted").text(`Deposit successful`);
@@ -124,7 +136,17 @@ async function startApp(provider) {
 
   approveButton.addEventListener('click', async () => {
     var depositAmountUSDC = $("#depositAmountUSDC").val(); //put in some checks here? positive number, between x and y, user has enough funds...
-    let tx = await giveApprovalFromUser(USDC_ADDRESS, KING_DAPP_ADDRESS, ethers.utils.parseUnits(depositAmountUSDC.toString(), 6));
+    var tx;
+    try {
+      tx = await giveApprovalFromUser(USDC_ADDRESS, KING_DAPP_ADDRESS, ethers.utils.parseUnits(depositAmountUSDC.toString(), 6));
+    } catch (err) {
+      $("#swapStarted").css("display", "inline-block");
+      $("#swapStarted").text(err["data"]["message"]);
+      setTimeout(function () {
+        $("#swapStarted").css("display", "none");
+      }, (5 * 1000));
+      return;
+    }
     let result = await tx.wait();
     if (result) {
       $("#swapStarted").css("display", "inline-block");
@@ -138,7 +160,17 @@ async function startApp(provider) {
   registerButton.addEventListener('click', async () => {
     secretInput = Math.floor(Math.random() * 10000); //put in some checks here? positive number, between x and y, user has enough funds...
     var commitment = ethers.utils.solidityKeccak256(["uint256", "address"], [secretInput, user])
-    let tx = await dappContract_signer.register(commitment);
+    var tx;
+    try {
+      tx = await dappContract_signer.register(commitment);
+    } catch (err) {
+      $("#swapStarted").css("display", "inline-block");
+      $("#swapStarted").text(err["data"]["message"]);
+      setTimeout(function () {
+        $("#swapStarted").css("display", "none");
+      }, (5 * 1000));
+      return;
+    }
     let result = await tx.wait();
     if (result) {
       $("#swapStarted").css("display", "inline-block");
@@ -149,20 +181,39 @@ async function startApp(provider) {
     }
   })
 
-  depositButton.addEventListener('click', async () => {
+  depositUsdcButton.addEventListener('click', async () => {
+    console.log(secretInput);
+    // secretInput = 1234;
+    if (typeof secretInput === 'undefined') {
+      $("#swapStarted").css("display", "inline-block");
+      $("#swapStarted").text(`Please register before depositing`);
+      return;
+    }
     var depositAmountUSDC = $("#depositAmountUSDC").val(); //put in some checks here? positive number, between x and y, user has enough funds...
     console.log(`Depositing ${depositAmountUSDC} of USDC`);
     $("#swapStarted").css("display", "inline-block");
     $("#swapStarted").text(`Depositing ${depositAmountUSDC} of USDC`);
-    var estimatedGasLimit = await dappContract_signer.estimateGas.deposit(depositAmountUSDC * 10 ** 6, ethers.utils.hexZeroPad(secretInput, 32));
-    let tx = await dappContract_signer.deposit(depositAmountUSDC * 10 ** 6, ethers.utils.hexZeroPad(secretInput, 32), { gasLimit: parseInt(estimatedGasLimit * 1.2) });
+    // var estimatedGasLimit = await dappContract_signer.estimateGas.deposit(depositAmountUSDC * 10 ** 6, ethers.utils.hexZeroPad(secretInput, 32));
+    var tx;
+    try {
+      tx = await dappContract_signer.deposit(depositAmountUSDC * 10 ** 6, ethers.utils.hexZeroPad(secretInput, 32)); //, { gasLimit: parseInt(estimatedGasLimit * 1.2) }
+    }
+    catch (err) {
+      $("#swapStarted").css("display", "inline-block");
+      $("#swapStarted").text(err["data"]["message"]);
+      setTimeout(function () {
+        $("#swapStarted").css("display", "none");
+      }, (10 * 1000));
+      return;
+    }
     let result = await tx.wait();
+    console.log(result)
     if (result) {
       $("#swapStarted").css("display", "inline-block");
       $("#swapStarted").text(`Deposit successful`);
       setTimeout(function () {
         $("#swapStarted").css("display", "none");
-      }, (3 * 1000));
+      }, (5 * 1000));
     }
   })
 }
