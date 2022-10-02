@@ -41,15 +41,10 @@ describe(`Testing King contract`, () => {
     describe(`Testing depositing into King, withdrawing from King:
     `, () => {
         it('Should allow an initial deposit of 1 MATIC from user 1 into King, increasing the contract balance by 1 MATIC', async () => {
-            let secretInput1 = 1234
-            await King.connect(user1).register(ethers.utils.solidityKeccak256(["uint256", "address"], [secretInput1, user1.address]));
-            let secret1 = ethers.utils.hexZeroPad(secretInput1, 32);
-
             let tx = {
                 to: King.address,
                 // Convert currency unit from ether to wei
                 value: ethers.utils.parseEther("100"),
-                data: secret1
             }
             // Send a transaction
             await user1.sendTransaction(tx);
@@ -71,25 +66,16 @@ describe(`Testing King contract`, () => {
         //     expect(await King.getKing()).to.equal(user1.address);
         // })
         it('Should allow a second deposit of > 1.5 MATIC, sending the deposited amt to user1', async () => {
-            let secretInput2 = 1234
-            console.log(typeof (secretInput2))
-            await King.connect(user2).register(ethers.utils.solidityKeccak256(["uint256", "address"], [secretInput2, user2.address]));
-            let secret2 = ethers.utils.hexZeroPad(secretInput2, 32);
-            console.log(secret2)
-            console.log(typeof (secret2))
             let initialUser1Balance = await user1.getBalance();
             console.log(ethers.utils.formatEther(initialUser1Balance));
             let tx = {
                 to: King.address,
                 // Convert currency unit from ether to wei
                 value: ethers.utils.parseEther("200"),
-                data: secret2
             }
             // Send a transaction
             await user2.sendTransaction(tx);
             let finalUser1Balance = await user1.getBalance();
-            console.log(ethers.utils.formatEther(finalUser1Balance));
-
             expect(finalUser1Balance).to.be.gt(initialUser1Balance);
         })
         it('Should have user 2 as King after second deposit', async () => {
@@ -98,14 +84,9 @@ describe(`Testing King contract`, () => {
         it('Should take a USDC deposit', async () => {
             //approve the transaction
             let usdcAmount = 1000000000;
-            let secretInput3 = 1234
             await usdc.connect(user3).approve(King.address, usdcAmount);
 
-            await King.connect(user3).register(ethers.utils.solidityKeccak256(["uint256", "address"], [secretInput3, user3.address]));
-
-            let secret3 = ethers.utils.hexZeroPad(secretInput3, 32);
-
-            await King.connect(user3).deposit(usdcAmount, secret3);
+            await King.connect(user3).deposit(usdcAmount);
 
             expect(await King.getKing()).to.equal(user3.address);
         })

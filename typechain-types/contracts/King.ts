@@ -32,12 +32,11 @@ export interface KingInterface extends utils.Interface {
   functions: {
     "MATIC_USD_ORACLE()": FunctionFragment;
     "USDC_ADDRESS()": FunctionFragment;
-    "deposit(uint256,bytes32)": FunctionFragment;
+    "deposit(uint256)": FunctionFragment;
     "emergencyWithdraw()": FunctionFragment;
     "getKing()": FunctionFragment;
     "maximumPaid()": FunctionFragment;
     "owner()": FunctionFragment;
-    "register(bytes32)": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "setGasAllocatedForKingPayment(uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
@@ -52,7 +51,6 @@ export interface KingInterface extends utils.Interface {
       | "getKing"
       | "maximumPaid"
       | "owner"
-      | "register"
       | "renounceOwnership"
       | "setGasAllocatedForKingPayment"
       | "transferOwnership"
@@ -68,7 +66,7 @@ export interface KingInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "deposit",
-    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BytesLike>]
+    values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "emergencyWithdraw",
@@ -80,10 +78,6 @@ export interface KingInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "register",
-    values: [PromiseOrValue<BytesLike>]
-  ): string;
   encodeFunctionData(
     functionFragment: "renounceOwnership",
     values?: undefined
@@ -116,7 +110,6 @@ export interface KingInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "register", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceOwnership",
     data: BytesLike
@@ -209,7 +202,6 @@ export interface King extends BaseContract {
 
     deposit(
       depositAmount: PromiseOrValue<BigNumberish>,
-      _secret: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -222,11 +214,6 @@ export interface King extends BaseContract {
     maximumPaid(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
-
-    register(
-      _commitment: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
 
     renounceOwnership(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -249,7 +236,6 @@ export interface King extends BaseContract {
 
   deposit(
     depositAmount: PromiseOrValue<BigNumberish>,
-    _secret: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -262,11 +248,6 @@ export interface King extends BaseContract {
   maximumPaid(overrides?: CallOverrides): Promise<BigNumber>;
 
   owner(overrides?: CallOverrides): Promise<string>;
-
-  register(
-    _commitment: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
 
   renounceOwnership(
     overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -289,7 +270,6 @@ export interface King extends BaseContract {
 
     deposit(
       depositAmount: PromiseOrValue<BigNumberish>,
-      _secret: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -300,11 +280,6 @@ export interface King extends BaseContract {
     maximumPaid(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<string>;
-
-    register(
-      _commitment: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
@@ -354,7 +329,6 @@ export interface King extends BaseContract {
 
     deposit(
       depositAmount: PromiseOrValue<BigNumberish>,
-      _secret: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -367,11 +341,6 @@ export interface King extends BaseContract {
     maximumPaid(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
-
-    register(
-      _commitment: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
 
     renounceOwnership(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -395,7 +364,6 @@ export interface King extends BaseContract {
 
     deposit(
       depositAmount: PromiseOrValue<BigNumberish>,
-      _secret: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -408,11 +376,6 @@ export interface King extends BaseContract {
     maximumPaid(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    register(
-      _commitment: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
 
     renounceOwnership(
       overrides?: Overrides & { from?: PromiseOrValue<string> }

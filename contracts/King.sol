@@ -13,9 +13,6 @@ contract King is Ownable {
         0xAB594600376Ec9fD91F8e885dADF0CE036862dE0;
     address payable king;
     uint256 public maximumPaid;
-    bytes32 commitment;
-    uint256 timeout;
-    uint256 constant ONE_MINUTE = 60;
     uint256 gasAllocatedForKingPayment;
     event EthDeposit(bool success, uint256 amount, address king);
     event UsdcDeposit(uint256 amount, address king);
@@ -40,15 +37,10 @@ contract King is Ownable {
         gasAllocatedForKingPayment = gasAmount;
     }
 
-    //must take USDC as well...
-    fallback() external payable {
+    receive() external payable {
         require(
             msg.value >= (3 * maximumPaid) / 2,
             "You're not depositing enough ether!"
-        );
-        require(
-            commitment == keccak256(abi.encodePacked(msg.data, msg.sender)),
-            "Sorry, you're not the currently registered depositor."
         );
         if (maximumPaid > 0) {
             maximumPaid = msg.value;
@@ -62,32 +54,13 @@ contract King is Ownable {
         king = payable(msg.sender);
     }
 
-    receive() external payable {
-        revert("Sorry, you're not the currently registered depositor.");
-    }
-
-    function register(bytes32 _commitment) external {
-        if (commitment != bytes32(0)) {
-            require(
-                block.timestamp > timeout,
-                "Someone else has registered to deposit, please wait and try again in 3 minutes"
-            );
-        }
-        commitment = _commitment;
-        timeout = block.timestamp + ONE_MINUTE;
-    }
-
-    function deposit(uint256 depositAmount, bytes32 _secret) external {
+    function deposit(uint256 depositAmount) external {
         require(
             depositAmount >=
                 ((3 * maximumPaid * uint256(getLatestPrice(MATIC_USD_ORACLE))) /
                     (10**20)) /
                     2,
             "You're not depositing enough USDC!"
-        );
-        require(
-            commitment == keccak256(abi.encodePacked(_secret, msg.sender)),
-            "Sorry, you're not the currently registered depositor."
         );
         if (maximumPaid > 0) {
             maximumPaid =

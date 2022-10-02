@@ -2,11 +2,11 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/richardjamieson/Documents/GitHub/King/contracts/King.sol": {
-      "lastModificationDate": 1664624842517,
-      "contentHash": "7f1c11bf2c9264f8e2ff099e951467ab",
+      "lastModificationDate": 1664691128800,
+      "contentHash": "0964ea1c6dc529da60ee197b160c905f",
       "sourceName": "contracts/King.sol",
       "solcConfig": {
-        "version": "0.8.7",
+        "version": "0.8.17",
         "settings": {
           "viaIR": true,
           "optimizer": {
@@ -46,7 +46,7 @@
         "hardhat/console.sol"
       ],
       "versionPragmas": [
-        "0.8.7"
+        "0.8.17"
       ],
       "artifacts": [
         "King"
@@ -57,7 +57,7 @@
       "contentHash": "3a843b05b85a270e9455e3d2e804e633",
       "sourceName": "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
       "solcConfig": {
-        "version": "0.8.7",
+        "version": "0.8.17",
         "settings": {
           "viaIR": true,
           "optimizer": {
@@ -107,7 +107,7 @@
       "contentHash": "611f626b2447ccff9ba5332460fd217f",
       "sourceName": "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol",
       "solcConfig": {
-        "version": "0.8.7",
+        "version": "0.8.17",
         "settings": {
           "viaIR": true,
           "optimizer": {
@@ -153,7 +153,7 @@
       "contentHash": "ad7c2d0af148c8f9f097d65deeb4da6b",
       "sourceName": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
       "solcConfig": {
-        "version": "0.8.7",
+        "version": "0.8.17",
         "settings": {
           "viaIR": true,
           "optimizer": {
@@ -199,7 +199,7 @@
       "contentHash": "fb77f144244b9ab12533aa6ce85ef8c5",
       "sourceName": "@openzeppelin/contracts/token/ERC20/extensions/draft-IERC20Permit.sol",
       "solcConfig": {
-        "version": "0.8.7",
+        "version": "0.8.17",
         "settings": {
           "viaIR": true,
           "optimizer": {
@@ -245,7 +245,7 @@
       "contentHash": "c476b3895a94798b88a4bb97399e6dfe",
       "sourceName": "@openzeppelin/contracts/utils/Address.sol",
       "solcConfig": {
-        "version": "0.8.7",
+        "version": "0.8.17",
         "settings": {
           "viaIR": true,
           "optimizer": {
@@ -287,11 +287,11 @@
       ]
     },
     "/Users/richardjamieson/Documents/GitHub/King/contracts/Migrations.sol": {
-      "lastModificationDate": 1664367201207,
-      "contentHash": "dcc7e393e247d76be1987374e701b920",
+      "lastModificationDate": 1664690663576,
+      "contentHash": "6ca3078fb3a078a654d8fa5ba6b79dfa",
       "sourceName": "contracts/Migrations.sol",
       "solcConfig": {
-        "version": "0.8.7",
+        "version": "0.8.17",
         "settings": {
           "viaIR": true,
           "optimizer": {
@@ -326,7 +326,7 @@
       },
       "imports": [],
       "versionPragmas": [
-        "0.8.7"
+        "0.8.17"
       ],
       "artifacts": [
         "Migrations"
@@ -337,7 +337,7 @@
       "contentHash": "4ff3cd2f6272c9a6516e9ee4f2b967d3",
       "sourceName": "hardhat/console.sol",
       "solcConfig": {
-        "version": "0.8.7",
+        "version": "0.8.17",
         "settings": {
           "viaIR": true,
           "optimizer": {
@@ -431,7 +431,7 @@
       "contentHash": "5f2c5c4b6af2dd4551027144797bc8be",
       "sourceName": "@openzeppelin/contracts/utils/Context.sol",
       "solcConfig": {
-        "version": "0.8.7",
+        "version": "0.8.17",
         "settings": {
           "viaIR": true,
           "optimizer": {
@@ -477,7 +477,7 @@
       "contentHash": "e436cea06129be2c73cda4b1acc848b5",
       "sourceName": "@openzeppelin/contracts/access/Ownable.sol",
       "solcConfig": {
-        "version": "0.8.7",
+        "version": "0.8.17",
         "settings": {
           "viaIR": true,
           "optimizer": {
