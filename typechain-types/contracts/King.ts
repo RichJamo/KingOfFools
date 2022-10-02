@@ -125,13 +125,17 @@ export interface KingInterface extends utils.Interface {
 
   events: {
     "EthDeposit(bool,uint256,address)": EventFragment;
+    "EthEmergencyWithdrawal(bool,uint256)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "UsdcDeposit(uint256,address)": EventFragment;
+    "UsdcEmergencyWithdrawal(uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "EthDeposit"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "EthEmergencyWithdrawal"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UsdcDeposit"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UsdcEmergencyWithdrawal"): EventFragment;
 }
 
 export interface EthDepositEventObject {
@@ -145,6 +149,18 @@ export type EthDepositEvent = TypedEvent<
 >;
 
 export type EthDepositEventFilter = TypedEventFilter<EthDepositEvent>;
+
+export interface EthEmergencyWithdrawalEventObject {
+  sent: boolean;
+  balance: BigNumber;
+}
+export type EthEmergencyWithdrawalEvent = TypedEvent<
+  [boolean, BigNumber],
+  EthEmergencyWithdrawalEventObject
+>;
+
+export type EthEmergencyWithdrawalEventFilter =
+  TypedEventFilter<EthEmergencyWithdrawalEvent>;
 
 export interface OwnershipTransferredEventObject {
   previousOwner: string;
@@ -168,6 +184,17 @@ export type UsdcDepositEvent = TypedEvent<
 >;
 
 export type UsdcDepositEventFilter = TypedEventFilter<UsdcDepositEvent>;
+
+export interface UsdcEmergencyWithdrawalEventObject {
+  usdcBalance: BigNumber;
+}
+export type UsdcEmergencyWithdrawalEvent = TypedEvent<
+  [BigNumber],
+  UsdcEmergencyWithdrawalEventObject
+>;
+
+export type UsdcEmergencyWithdrawalEventFilter =
+  TypedEventFilter<UsdcEmergencyWithdrawalEvent>;
 
 export interface King extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -306,6 +333,15 @@ export interface King extends BaseContract {
       king?: null
     ): EthDepositEventFilter;
 
+    "EthEmergencyWithdrawal(bool,uint256)"(
+      sent?: null,
+      balance?: null
+    ): EthEmergencyWithdrawalEventFilter;
+    EthEmergencyWithdrawal(
+      sent?: null,
+      balance?: null
+    ): EthEmergencyWithdrawalEventFilter;
+
     "OwnershipTransferred(address,address)"(
       previousOwner?: PromiseOrValue<string> | null,
       newOwner?: PromiseOrValue<string> | null
@@ -320,6 +356,13 @@ export interface King extends BaseContract {
       king?: null
     ): UsdcDepositEventFilter;
     UsdcDeposit(amount?: null, king?: null): UsdcDepositEventFilter;
+
+    "UsdcEmergencyWithdrawal(uint256)"(
+      usdcBalance?: null
+    ): UsdcEmergencyWithdrawalEventFilter;
+    UsdcEmergencyWithdrawal(
+      usdcBalance?: null
+    ): UsdcEmergencyWithdrawalEventFilter;
   };
 
   estimateGas: {

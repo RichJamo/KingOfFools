@@ -54,20 +54,21 @@ describe(`Testing King contract`, () => {
         it('Should have user1 as king after first deposit', async () => {
             expect(await King.getKing()).to.equal(user1.address);
         })
-        // it('Should not allow a second deposit of less than 1.5 MATIC', async () => {
-        //     let tx = {
-        //         to: King.address,
-        //         // Convert currency unit from ether to wei
-        //         value: ethers.utils.parseEther("1")
-        //     }
-        //     // Send a transaction
-        //     await user2.sendTransaction(tx);
+        it('Should not allow a second deposit of less than 1.5 MATIC', async () => {
+            let tx = {
+                to: King.address,
+                // Convert currency unit from ether to wei
+                value: ethers.utils.parseEther("1")
+            }
+            // Send a transaction
+            try {
+                await user2.sendTransaction(tx);
+            } catch (err) { }
 
-        //     expect(await King.getKing()).to.equal(user1.address);
-        // })
+            expect(await King.getKing()).to.equal(user1.address);
+        })
         it('Should allow a second deposit of > 1.5 MATIC, sending the deposited amt to user1', async () => {
             let initialUser1Balance = await user1.getBalance();
-            console.log(ethers.utils.formatEther(initialUser1Balance));
             let tx = {
                 to: King.address,
                 // Convert currency unit from ether to wei
@@ -84,52 +85,18 @@ describe(`Testing King contract`, () => {
         it('Should take a USDC deposit', async () => {
             //approve the transaction
             let usdcAmount = 1000000000;
+            await usdc.connect(user3).approve(King.address, 0);
             await usdc.connect(user3).approve(King.address, usdcAmount);
 
             await King.connect(user3).deposit(usdcAmount);
 
             expect(await King.getKing()).to.equal(user3.address);
         })
-        // it('Should give portfolio a non-zero wbtc balance', async () => {
-        //     var wbtc = await ethers.getContractAt(token_abi, WBTC_ADDRESS);
-        //     var wbtcBalance = await wbtc.balanceOf(King.address);
+        it('Should do an emergency withdraw', async () => {
+            await King.emergencyWithdraw();
 
-        //     expect(wbtcBalance).to.be.gt(0);
-        // })
-        // it('Should deposit USDC from user 2 into King - leading to an increase in receipt tokens for user 2', async () => {
-        //     var usdcBalance = 10000000; //await usdc.balanceOf(user2.address);
-        //     await usdc.connect(user2).approve(King.address, usdcBalance);
-
-        //     const receiptTokenBalanceBeforeDeposit = await receiptToken.balanceOf(user2.address);
-
-        //     await King.connect(user2).depositUserFunds(usdcBalance); //todo - change min in amount from 0
-        //     var supply = await King.totalSupply();
-        //     const receiptTokenBalanceAfterDeposit = await receiptToken.balanceOf(user2.address);
-        //     expect(receiptTokenBalanceAfterDeposit).to.be.gt(receiptTokenBalanceBeforeDeposit);
-        // })
-        // it('Should allocate user 2 almost exactly the same number of shares as user 1', async () => {
-        //     const receiptTokenBalanceUser1AfterDeposit = await receiptToken.balanceOf(user1.address);
-        //     const receiptTokenBalanceUser2AfterDeposit = await receiptToken.balanceOf(user2.address);
-
-        //     expect(receiptTokenBalanceUser1AfterDeposit).to.be.closeTo(receiptTokenBalanceUser2AfterDeposit, 20000);
-        // })
-        // it('Should withdraw USDC from King - resulting in receipt token balance returning to zero', async () => {
-        //     await King.withdrawUserFunds(user1.address);
-
-        //     const receiptTokenBalanceAfterWithdrawal = await receiptToken.balanceOf(user1.address);
-
-        //     expect(receiptTokenBalanceAfterWithdrawal).to.equal(0);
-        // })
-        // it('Should return USDC to user 1, resulting in their USDC balance > 0', async () => {
-        //     var usdcBalance3 = await usdc.balanceOf(user1.address);
-
-        //     expect(usdcBalance3).to.be.gt(0);
-        // })
-        // it('Should be the case that user 2 now holds all receipt tokens', async () => {
-        //     var supply = await King.totalSupply()
-        //     const receiptTokenBalanceAfterWithdrawal = await receiptToken.balanceOf(user2.address);
-        //     expect(receiptTokenBalanceAfterWithdrawal).to.equal(supply);
-        // })
+            expect(await user1.getBalance()).to.be.gt(0);
+        })
     })
 })
 

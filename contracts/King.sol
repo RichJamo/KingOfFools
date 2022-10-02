@@ -3,7 +3,6 @@ pragma solidity 0.8.17;
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-import "hardhat/console.sol";
 
 contract King is Ownable {
     using SafeERC20 for IERC20;
@@ -13,13 +12,12 @@ contract King is Ownable {
         0xAB594600376Ec9fD91F8e885dADF0CE036862dE0;
     address payable king;
     uint256 public maximumPaid;
-    uint256 gasAllocatedForKingPayment;
+    uint256 gasAllocatedForKingPayment = 2300;
     event EthDeposit(bool success, uint256 amount, address king);
     event UsdcDeposit(uint256 amount, address king);
+    event EthEmergencyWithdrawal(bool sent, uint256 balance);
+    event UsdcEmergencyWithdrawal(uint256 usdcBalance);
 
-    /**
-     * Returns the latest price
-     */
     function getLatestPrice(address oracleAddress)
         internal
         view
@@ -45,11 +43,11 @@ contract King is Ownable {
         if (maximumPaid > 0) {
             maximumPaid = msg.value;
             (bool sent, ) = king.call{
-                value: msg.value,
-                gas: gasAllocatedForKingPayment
+                gas: gasAllocatedForKingPayment,
+                value: msg.value
             }("");
             emit EthDeposit(sent, msg.value, msg.sender);
-            // if payer cannot receive ETH, that's there bad, and we don't let it halt our protocol
+            // we make best efforts to pay outgoing king, but if it fails it doesn't jam the contract
         } else maximumPaid = msg.value;
         king = payable(msg.sender);
     }
@@ -90,11 +88,14 @@ contract King is Ownable {
         if (ethBalance > 0) {
             (bool sent, ) = msg.sender.call{value: address(this).balance}("");
             require(sent, "Error in withdrawal");
+            emit EthEmergencyWithdrawal(sent, address(this).balance);
         }
         uint256 usdcBalance = IERC20(USDC_ADDRESS).balanceOf(address(this));
         if (usdcBalance > 0) {
-            IERC20(USDC_ADDRESS).approve(msg.sender, usdcBalance);
+            IERC20(USDC_ADDRESS).safeApprove(msg.sender, 0);
+            IERC20(USDC_ADDRESS).safeIncreaseAllowance(msg.sender, usdcBalance);
             IERC20(USDC_ADDRESS).safeTransfer(msg.sender, usdcBalance);
+            emit UsdcEmergencyWithdrawal(usdcBalance);
         }
     }
 }
