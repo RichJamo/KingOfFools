@@ -1,7 +1,7 @@
 # KingOfFools
 A simple dapp built for the purposes of a technical test.
 
-I will host this on Spheron, url to follow soon.
+Latest version is hosted on Spheron, here: https://spheron.mypinata.cloud/ipfs/QmXPEpS1jwD83PFoiF1QzQgg2KrDDetKk6MaUPV3b5jmLe/
 
 ## Usage note
 Wallet integration is very basic on the front end of this dapp:
