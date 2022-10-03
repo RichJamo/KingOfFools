@@ -124,31 +124,19 @@ export interface KingInterface extends utils.Interface {
   ): Result;
 
   events: {
-    "EthDeposit(bool,uint256,address)": EventFragment;
     "EthEmergencyWithdrawal(bool,uint256)": EventFragment;
+    "EthSent(bool,uint256,address)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "UsdcDeposit(uint256,address)": EventFragment;
     "UsdcEmergencyWithdrawal(uint256)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "EthDeposit"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "EthEmergencyWithdrawal"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "EthSent"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UsdcDeposit"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UsdcEmergencyWithdrawal"): EventFragment;
 }
-
-export interface EthDepositEventObject {
-  success: boolean;
-  amount: BigNumber;
-  king: string;
-}
-export type EthDepositEvent = TypedEvent<
-  [boolean, BigNumber, string],
-  EthDepositEventObject
->;
-
-export type EthDepositEventFilter = TypedEventFilter<EthDepositEvent>;
 
 export interface EthEmergencyWithdrawalEventObject {
   sent: boolean;
@@ -161,6 +149,18 @@ export type EthEmergencyWithdrawalEvent = TypedEvent<
 
 export type EthEmergencyWithdrawalEventFilter =
   TypedEventFilter<EthEmergencyWithdrawalEvent>;
+
+export interface EthSentEventObject {
+  success: boolean;
+  amount: BigNumber;
+  king: string;
+}
+export type EthSentEvent = TypedEvent<
+  [boolean, BigNumber, string],
+  EthSentEventObject
+>;
+
+export type EthSentEventFilter = TypedEventFilter<EthSentEvent>;
 
 export interface OwnershipTransferredEventObject {
   previousOwner: string;
@@ -322,17 +322,6 @@ export interface King extends BaseContract {
   };
 
   filters: {
-    "EthDeposit(bool,uint256,address)"(
-      success?: null,
-      amount?: null,
-      king?: null
-    ): EthDepositEventFilter;
-    EthDeposit(
-      success?: null,
-      amount?: null,
-      king?: null
-    ): EthDepositEventFilter;
-
     "EthEmergencyWithdrawal(bool,uint256)"(
       sent?: null,
       balance?: null
@@ -341,6 +330,13 @@ export interface King extends BaseContract {
       sent?: null,
       balance?: null
     ): EthEmergencyWithdrawalEventFilter;
+
+    "EthSent(bool,uint256,address)"(
+      success?: null,
+      amount?: null,
+      king?: null
+    ): EthSentEventFilter;
+    EthSent(success?: null, amount?: null, king?: null): EthSentEventFilter;
 
     "OwnershipTransferred(address,address)"(
       previousOwner?: PromiseOrValue<string> | null,

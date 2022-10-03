@@ -6,14 +6,17 @@ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 contract King is Ownable {
     using SafeERC20 for IERC20;
+
     address public constant USDC_ADDRESS =
         0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174;
     address public constant MATIC_USD_ORACLE =
         0xAB594600376Ec9fD91F8e885dADF0CE036862dE0;
     address payable king;
+
     uint256 public maximumPaid;
     uint256 gasAllocatedForKingPayment = 2300;
-    event EthDeposit(bool success, uint256 amount, address king);
+
+    event EthSent(bool success, uint256 amount, address king);
     event UsdcDeposit(uint256 amount, address king);
     event EthEmergencyWithdrawal(bool sent, uint256 balance);
     event UsdcEmergencyWithdrawal(uint256 usdcBalance);
@@ -41,15 +44,19 @@ contract King is Ownable {
             "You're not depositing enough ether!"
         );
         if (maximumPaid > 0) {
+            address _to = king;
             maximumPaid = msg.value;
-            (bool sent, ) = king.call{
+            king = payable(msg.sender);
+            (bool sent, ) = _to.call{
                 gas: gasAllocatedForKingPayment,
                 value: msg.value
             }("");
-            emit EthDeposit(sent, msg.value, msg.sender);
+            emit EthSent(sent, msg.value, msg.sender);
             // we make best efforts to pay outgoing king, but if it fails it doesn't jam the contract
-        } else maximumPaid = msg.value;
-        king = payable(msg.sender);
+        } else {
+            maximumPaid = msg.value;
+            king = payable(msg.sender);
+        }
     }
 
     function deposit(uint256 depositAmount) external {
@@ -60,22 +67,15 @@ contract King is Ownable {
                     2,
             "You're not depositing enough USDC!"
         );
-        if (maximumPaid > 0) {
-            maximumPaid =
-                (depositAmount * (10**20)) /
-                uint256(getLatestPrice(MATIC_USD_ORACLE));
-            IERC20(USDC_ADDRESS).safeTransferFrom(
-                msg.sender,
-                king,
-                depositAmount
-            );
-            // this function will revert if transfer not possible
-        } else {
-            maximumPaid =
-                (depositAmount * 100) /
-                uint256(getLatestPrice(MATIC_USD_ORACLE));
-        }
+        address _to;
+        if (maximumPaid > 0) _to = king;
+        else _to = address(this);
         king = payable(msg.sender);
+        maximumPaid =
+            (depositAmount * (10**20)) /
+            uint256(getLatestPrice(MATIC_USD_ORACLE));
+        IERC20(USDC_ADDRESS).safeTransferFrom(msg.sender, _to, depositAmount);
+        // this function will revert if transfer not possible
         emit UsdcDeposit(depositAmount, msg.sender);
     }
 
@@ -92,8 +92,14 @@ contract King is Ownable {
         }
         uint256 usdcBalance = IERC20(USDC_ADDRESS).balanceOf(address(this));
         if (usdcBalance > 0) {
-            IERC20(USDC_ADDRESS).safeApprove(msg.sender, 0);
-            IERC20(USDC_ADDRESS).safeIncreaseAllowance(msg.sender, usdcBalance);
+            if (IERC20(USDC_ADDRESS).allowance(address(this), msg.sender) > 0) {
+                IERC20(USDC_ADDRESS).safeIncreaseAllowance(
+                    msg.sender,
+                    usdcBalance
+                );
+            } else {
+                IERC20(USDC_ADDRESS).safeApprove(msg.sender, usdcBalance);
+            }
             IERC20(USDC_ADDRESS).safeTransfer(msg.sender, usdcBalance);
             emit UsdcEmergencyWithdrawal(usdcBalance);
         }

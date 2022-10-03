@@ -5,6 +5,25 @@ var king_dapp_abi = [
       {
         "indexed": false,
         "internalType": "bool",
+        "name": "sent",
+        "type": "bool"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "balance",
+        "type": "uint256"
+      }
+    ],
+    "name": "EthEmergencyWithdrawal",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bool",
         "name": "success",
         "type": "bool"
       },
@@ -21,7 +40,7 @@ var king_dapp_abi = [
         "type": "address"
       }
     ],
-    "name": "EthDeposit",
+    "name": "EthSent",
     "type": "event"
   },
   {
@@ -63,9 +82,17 @@ var king_dapp_abi = [
     "type": "event"
   },
   {
-    "stateMutability": "payable",
-    "type": "fallback",
-    "payable": true
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "usdcBalance",
+        "type": "uint256"
+      }
+    ],
+    "name": "UsdcEmergencyWithdrawal",
+    "type": "event"
   },
   {
     "inputs": [],
@@ -144,14 +171,19 @@ var king_dapp_abi = [
     "type": "function"
   },
   {
+    "stateMutability": "payable",
+    "type": "receive",
+    "payable": true
+  },
+  {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "_commitment",
-        "type": "bytes32"
+        "internalType": "uint256",
+        "name": "gasAmount",
+        "type": "uint256"
       }
     ],
-    "name": "register",
+    "name": "setGasAllocatedForKingPayment",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -162,11 +194,6 @@ var king_dapp_abi = [
         "internalType": "uint256",
         "name": "depositAmount",
         "type": "uint256"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_secret",
-        "type": "bytes32"
       }
     ],
     "name": "deposit",

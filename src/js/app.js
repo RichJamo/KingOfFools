@@ -1,4 +1,4 @@
-const KING_DAPP_ADDRESS = "0xc240222f1eE517422a867Daad9E919452a938DBC";
+const KING_DAPP_ADDRESS = "0x89E277FC3f5e1e654F76148fD1C8BfD2E9Af7e6e"; //"0xc240222f1eE517422a867Daad9E919452a938DBC"; 
 const USDC_ADDRESS = "0x2791bca1f2de4661ed88a30c99a7a9449aa84174";
 var user;
 
@@ -95,7 +95,6 @@ async function startApp(provider) {
     //   to: KING_DAPP_ADDRESS,
     //   // Convert currency unit from ether to wei
     //   value: depositAmountETH * 10 ** 18,
-    //   data: ethers.utils.hexZeroPad(secretInput, 32)
     // });
     var tx;
     try {
@@ -150,12 +149,12 @@ async function startApp(provider) {
     console.log(`Depositing ${depositAmountUSDC} of USDC`);
     $("#swapStarted").css("display", "inline-block");
     $("#swapStarted").text(`Depositing ${depositAmountUSDC} of USDC`);
-    // var estimatedGasLimit = await dappContract_signer.estimateGas.deposit(depositAmountUSDC * 10 ** 6, ethers.utils.hexZeroPad(secretInput, 32));
+    // var estimatedGasLimit = await dappContract_signer.estimateGas.deposit(depositAmountUSDC * 10 ** 6);
     var tx;
     try {
-      tx = await dappContract_signer.deposit(depositAmountUSDC * 10 ** 6, ethers.utils.hexZeroPad(secretInput, 32)); //, { gasLimit: parseInt(estimatedGasLimit * 1.2) }
-    }
-    catch (err) {
+      tx = await dappContract_signer.deposit(depositAmountUSDC * 10 ** 6); //, { gasLimit: parseInt(estimatedGasLimit * 1.2) }
+    } catch (err) {
+      console.log(err);
       $("#swapStarted").css("display", "inline-block");
       $("#swapStarted").text(err["data"]["message"]);
       setTimeout(function () {
