@@ -58,9 +58,11 @@ async function checkNetworkId(_provider) {
 
 async function startApp(provider) {
   const connectButton = document.getElementById('connectButton');
-  const depositETHButton = document.getElementById('depositETHButton');
+  const depositMATICButton = document.getElementById('depositMATICButton');
   const depositUsdcButton = document.getElementById('depositUsdcButton');
   const approveButton = document.getElementById('approveButton');
+  currentKing.innerHTML = await dappContract_provider.getKing();
+  currentMaxPaid.innerHTML = ethers.utils.formatEther(await dappContract_provider.maximumPaid());
 
   await walletButtonStateHandler();
 
@@ -89,19 +91,19 @@ async function startApp(provider) {
 
   });
 
-  depositETHButton.addEventListener('click', async () => {
-    var depositAmountETH = $("#depositAmountETH").val(); //put in some checks here? positive number, between x and y, user has enough funds...
+  depositMATICButton.addEventListener('click', async () => {
+    var depositAmountMATIC = $("#depositAmountMATIC").val(); //put in some checks here? positive number, between x and y, user has enough funds...
     // var estimatedGasLimit = await provider.sendTransaction({
     //   to: KING_DAPP_ADDRESS,
     //   // Convert currency unit from ether to wei
-    //   value: depositAmountETH * 10 ** 18,
+    //   value: depositAmountMATIC * 10 ** 18,
     // });
     var tx;
     try {
       tx = await signer.sendTransaction({
         to: KING_DAPP_ADDRESS,
         // Convert currency unit from ether to wei
-        value: ethers.utils.parseEther(depositAmountETH),
+        value: ethers.utils.parseEther(depositAmountMATIC),
       });
     } catch (err) {
       $("#swapStarted").css("display", "inline-block");
@@ -174,10 +176,6 @@ async function startApp(provider) {
   })
 }
 
-
-
-
-
 async function giveApprovalFromUser(token_address, spender_address, amountIn) {
   // create a new instance of a contract
   var tokenContract = new ethers.Contract(token_address, token_abi, signer)
@@ -191,36 +189,6 @@ async function giveApprovalFromUser(token_address, spender_address, amountIn) {
   }
 }
 
-async function getBalance(token_address, accountOrContract) {
-  // create a new instance of a contract - in web3.js >1.0.0, will have to use "new web3.eth.Contract" (uppercase C)
-  try {
-    var token_balance = await dappContract_provider.tokenBalanceOf(token_address, accountOrContract);
-    return token_balance;
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-async function getExchangeRate(oracle_address) {
-  var oracle = new ethers.Contract(oracle_address, CHAINLINK_ORACLE_ABI, provider);
-  try {
-    var exchangeRate = await oracle.latestAnswer();
-    return exchangeRate; //returns in BigNumber format
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-async function getDecimals(token_address) {
-  var tokenContract = new ethers.Contract(token_address, token_abi, provider)
-  // check how many decimals that token has
-  try {
-    var decimals = await tokenContract.decimals();//need to catch an error here - perhaps make this it's own function!
-    return decimals;
-  } catch (error) {
-    console.log(error);
-  }
-}
 
 
 
