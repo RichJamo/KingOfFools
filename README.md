@@ -23,4 +23,6 @@ Wallet integration is very basic on the front end of this dapp:
 - I don’t comment code excessively, I think the function names and the code itself is fairly easy to follow
 - For the USDC payment I don’t really see any way that the eth transfer could not go ahead – this is a change on the usdc contract, so as long as we send it a legitimate eth address (EOA or contract), and it’s approved, it will make the transfer
 
-
+## Testing
+- I have built a small set of unit tests, but these could definitely be built upon for more comprehensive testing
+- I have used slither, from Trail of Bits, to do static analysis testing
