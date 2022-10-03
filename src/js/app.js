@@ -1,4 +1,4 @@
-const KING_DAPP_ADDRESS = "0x89E277FC3f5e1e654F76148fD1C8BfD2E9Af7e6e"; //"0xc240222f1eE517422a867Daad9E919452a938DBC"; 
+const KING_DAPP_ADDRESS = "0x89E277FC3f5e1e654F76148fD1C8BfD2E9Af7e6e";
 const USDC_ADDRESS = "0x2791bca1f2de4661ed88a30c99a7a9449aa84174";
 var user;
 
@@ -92,12 +92,7 @@ async function startApp(provider) {
   });
 
   depositMATICButton.addEventListener('click', async () => {
-    var depositAmountMATIC = $("#depositAmountMATIC").val(); //put in some checks here? positive number, between x and y, user has enough funds...
-    // var estimatedGasLimit = await provider.sendTransaction({
-    //   to: KING_DAPP_ADDRESS,
-    //   // Convert currency unit from ether to wei
-    //   value: depositAmountMATIC * 10 ** 18,
-    // });
+    var depositAmountMATIC = $("#depositAmountMATIC").val();
     var tx;
     try {
       tx = await signer.sendTransaction({
@@ -124,7 +119,7 @@ async function startApp(provider) {
   })
 
   approveButton.addEventListener('click', async () => {
-    var depositAmountUSDC = $("#depositAmountUSDC").val(); //put in some checks here? positive number, between x and y, user has enough funds...
+    var depositAmountUSDC = $("#depositAmountUSDC").val();
     var tx;
     try {
       tx = await giveApprovalFromUser(USDC_ADDRESS, KING_DAPP_ADDRESS, ethers.utils.parseUnits(depositAmountUSDC.toString(), 6));
@@ -147,14 +142,13 @@ async function startApp(provider) {
   })
 
   depositUsdcButton.addEventListener('click', async () => {
-    var depositAmountUSDC = $("#depositAmountUSDC").val(); //put in some checks here? positive number, between x and y, user has enough funds...
+    var depositAmountUSDC = $("#depositAmountUSDC").val();
     console.log(`Depositing ${depositAmountUSDC} of USDC`);
     $("#swapStarted").css("display", "inline-block");
     $("#swapStarted").text(`Depositing ${depositAmountUSDC} of USDC`);
-    // var estimatedGasLimit = await dappContract_signer.estimateGas.deposit(depositAmountUSDC * 10 ** 6);
     var tx;
     try {
-      tx = await dappContract_signer.deposit(depositAmountUSDC * 10 ** 6); //, { gasLimit: parseInt(estimatedGasLimit * 1.2) }
+      tx = await dappContract_signer.deposit(depositAmountUSDC * 10 ** 6);
     } catch (err) {
       console.log(err);
       $("#swapStarted").css("display", "inline-block");
