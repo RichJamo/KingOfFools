@@ -32,10 +32,7 @@ contract King is Ownable {
         return price;
     }
 
-    function setGasAllocatedForKingPayment(uint256 gasAmount)
-        external
-        onlyOwner
-    {
+    function setGasAllocatedForKingPayment(uint256 gasAmount) external {
         gasAllocatedForKingPayment = gasAmount;
         emit GasAllocatedForKingPayment(gasAmount);
     }

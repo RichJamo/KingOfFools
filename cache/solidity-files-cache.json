@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/richardjamieson/Documents/GitHub/King/contracts/King.sol": {
-      "lastModificationDate": 1664787858426,
-      "contentHash": "2f10f09722eb7ce42e4af16ca6d92ab0",
+      "lastModificationDate": 1664787975399,
+      "contentHash": "f381825c7fda2df548cbc123802c4a18",
       "sourceName": "contracts/King.sol",
       "solcConfig": {
         "version": "0.8.17",
