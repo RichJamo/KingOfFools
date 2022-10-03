@@ -88,7 +88,7 @@ describe(`Testing King contract`, () => {
             await usdc.connect(user3).approve(King.address, 0);
             await usdc.connect(user3).approve(King.address, usdcAmount);
 
-            await King.connect(user3).deposit(usdcAmount);
+            await King.connect(user3).depositUsdc(usdcAmount);
 
             expect(await King.getKing()).to.equal(user3.address);
         })
