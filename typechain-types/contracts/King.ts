@@ -9,7 +9,6 @@ import type {
   CallOverrides,
   ContractTransaction,
   Overrides,
-  PayableOverrides,
   PopulatedTransaction,
   Signer,
   utils,
@@ -32,8 +31,9 @@ export interface KingInterface extends utils.Interface {
   functions: {
     "MATIC_USD_ORACLE()": FunctionFragment;
     "USDC_ADDRESS()": FunctionFragment;
-    "deposit(uint256)": FunctionFragment;
+    "depositUsdc(uint256)": FunctionFragment;
     "emergencyWithdraw()": FunctionFragment;
+    "gasAllocatedForKingPayment()": FunctionFragment;
     "getKing()": FunctionFragment;
     "maximumPaid()": FunctionFragment;
     "owner()": FunctionFragment;
@@ -46,8 +46,9 @@ export interface KingInterface extends utils.Interface {
     nameOrSignatureOrTopic:
       | "MATIC_USD_ORACLE"
       | "USDC_ADDRESS"
-      | "deposit"
+      | "depositUsdc"
       | "emergencyWithdraw"
+      | "gasAllocatedForKingPayment"
       | "getKing"
       | "maximumPaid"
       | "owner"
@@ -65,11 +66,15 @@ export interface KingInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "deposit",
+    functionFragment: "depositUsdc",
     values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "emergencyWithdraw",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "gasAllocatedForKingPayment",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "getKing", values?: undefined): string;
@@ -99,9 +104,16 @@ export interface KingInterface extends utils.Interface {
     functionFragment: "USDC_ADDRESS",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "deposit", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "depositUsdc",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "emergencyWithdraw",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "gasAllocatedForKingPayment",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getKing", data: BytesLike): Result;
@@ -126,6 +138,7 @@ export interface KingInterface extends utils.Interface {
   events: {
     "EthEmergencyWithdrawal(bool,uint256)": EventFragment;
     "EthSent(bool,uint256,address)": EventFragment;
+    "GasAllocatedForKingPayment(uint256)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "UsdcDeposit(uint256,address)": EventFragment;
     "UsdcEmergencyWithdrawal(uint256)": EventFragment;
@@ -133,6 +146,7 @@ export interface KingInterface extends utils.Interface {
 
   getEvent(nameOrSignatureOrTopic: "EthEmergencyWithdrawal"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "EthSent"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "GasAllocatedForKingPayment"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UsdcDeposit"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UsdcEmergencyWithdrawal"): EventFragment;
@@ -161,6 +175,17 @@ export type EthSentEvent = TypedEvent<
 >;
 
 export type EthSentEventFilter = TypedEventFilter<EthSentEvent>;
+
+export interface GasAllocatedForKingPaymentEventObject {
+  gasAmount: BigNumber;
+}
+export type GasAllocatedForKingPaymentEvent = TypedEvent<
+  [BigNumber],
+  GasAllocatedForKingPaymentEventObject
+>;
+
+export type GasAllocatedForKingPaymentEventFilter =
+  TypedEventFilter<GasAllocatedForKingPaymentEvent>;
 
 export interface OwnershipTransferredEventObject {
   previousOwner: string;
@@ -227,14 +252,16 @@ export interface King extends BaseContract {
 
     USDC_ADDRESS(overrides?: CallOverrides): Promise<[string]>;
 
-    deposit(
+    depositUsdc(
       depositAmount: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     emergencyWithdraw(
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
+
+    gasAllocatedForKingPayment(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     getKing(overrides?: CallOverrides): Promise<[string]>;
 
@@ -261,14 +288,16 @@ export interface King extends BaseContract {
 
   USDC_ADDRESS(overrides?: CallOverrides): Promise<string>;
 
-  deposit(
+  depositUsdc(
     depositAmount: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   emergencyWithdraw(
-    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
+
+  gasAllocatedForKingPayment(overrides?: CallOverrides): Promise<BigNumber>;
 
   getKing(overrides?: CallOverrides): Promise<string>;
 
@@ -295,12 +324,14 @@ export interface King extends BaseContract {
 
     USDC_ADDRESS(overrides?: CallOverrides): Promise<string>;
 
-    deposit(
+    depositUsdc(
       depositAmount: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
 
     emergencyWithdraw(overrides?: CallOverrides): Promise<void>;
+
+    gasAllocatedForKingPayment(overrides?: CallOverrides): Promise<BigNumber>;
 
     getKing(overrides?: CallOverrides): Promise<string>;
 
@@ -338,6 +369,13 @@ export interface King extends BaseContract {
     ): EthSentEventFilter;
     EthSent(success?: null, amount?: null, king?: null): EthSentEventFilter;
 
+    "GasAllocatedForKingPayment(uint256)"(
+      gasAmount?: null
+    ): GasAllocatedForKingPaymentEventFilter;
+    GasAllocatedForKingPayment(
+      gasAmount?: null
+    ): GasAllocatedForKingPaymentEventFilter;
+
     "OwnershipTransferred(address,address)"(
       previousOwner?: PromiseOrValue<string> | null,
       newOwner?: PromiseOrValue<string> | null
@@ -366,14 +404,16 @@ export interface King extends BaseContract {
 
     USDC_ADDRESS(overrides?: CallOverrides): Promise<BigNumber>;
 
-    deposit(
+    depositUsdc(
       depositAmount: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     emergencyWithdraw(
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
+
+    gasAllocatedForKingPayment(overrides?: CallOverrides): Promise<BigNumber>;
 
     getKing(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -401,13 +441,17 @@ export interface King extends BaseContract {
 
     USDC_ADDRESS(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    deposit(
+    depositUsdc(
       depositAmount: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     emergencyWithdraw(
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    gasAllocatedForKingPayment(
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     getKing(overrides?: CallOverrides): Promise<PopulatedTransaction>;

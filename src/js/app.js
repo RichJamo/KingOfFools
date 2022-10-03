@@ -148,7 +148,7 @@ async function startApp(provider) {
     $("#swapStarted").text(`Depositing ${depositAmountUSDC} of USDC`);
     var tx;
     try {
-      tx = await dappContract_signer.deposit(depositAmountUSDC * 10 ** 6);
+      tx = await dappContract_signer.depositUsdc(depositAmountUSDC * 10 ** 6);
     } catch (err) {
       console.log(err);
       $("#swapStarted").css("display", "inline-block");

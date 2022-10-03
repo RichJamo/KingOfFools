@@ -14,12 +14,13 @@ contract King is Ownable {
     address payable king;
 
     uint256 public maximumPaid;
-    uint256 gasAllocatedForKingPayment = 2300;
+    uint256 public gasAllocatedForKingPayment = 2300;
 
     event EthSent(bool success, uint256 amount, address king);
     event UsdcDeposit(uint256 amount, address king);
     event EthEmergencyWithdrawal(bool sent, uint256 balance);
     event UsdcEmergencyWithdrawal(uint256 usdcBalance);
+    event GasAllocatedForKingPayment(uint256 gasAmount);
 
     function getLatestPrice(address oracleAddress)
         internal
@@ -36,6 +37,7 @@ contract King is Ownable {
         onlyOwner
     {
         gasAllocatedForKingPayment = gasAmount;
+        emit GasAllocatedForKingPayment(gasAmount);
     }
 
     receive() external payable {
@@ -59,7 +61,7 @@ contract King is Ownable {
         }
     }
 
-    function deposit(uint256 depositAmount) external {
+    function depositUsdc(uint256 depositAmount) external {
         require(
             depositAmount >=
                 ((3 * maximumPaid * uint256(getLatestPrice(MATIC_USD_ORACLE))) /
@@ -74,16 +76,16 @@ contract King is Ownable {
         maximumPaid =
             (depositAmount * (10**20)) /
             uint256(getLatestPrice(MATIC_USD_ORACLE));
+        emit UsdcDeposit(depositAmount, msg.sender);
         IERC20(USDC_ADDRESS).safeTransferFrom(msg.sender, _to, depositAmount);
         // this function will revert if transfer not possible
-        emit UsdcDeposit(depositAmount, msg.sender);
     }
 
     function getKing() external view returns (address payable) {
         return king;
     }
 
-    function emergencyWithdraw() external payable onlyOwner {
+    function emergencyWithdraw() external onlyOwner {
         uint256 ethBalance = address(this).balance;
         if (ethBalance > 0) {
             (bool sent, ) = msg.sender.call{value: address(this).balance}("");
@@ -92,16 +94,9 @@ contract King is Ownable {
         }
         uint256 usdcBalance = IERC20(USDC_ADDRESS).balanceOf(address(this));
         if (usdcBalance > 0) {
-            if (IERC20(USDC_ADDRESS).allowance(address(this), msg.sender) > 0) {
-                IERC20(USDC_ADDRESS).safeIncreaseAllowance(
-                    msg.sender,
-                    usdcBalance
-                );
-            } else {
-                IERC20(USDC_ADDRESS).safeApprove(msg.sender, usdcBalance);
-            }
-            IERC20(USDC_ADDRESS).safeTransfer(msg.sender, usdcBalance);
             emit UsdcEmergencyWithdrawal(usdcBalance);
+            IERC20(USDC_ADDRESS).safeApprove(msg.sender, usdcBalance);
+            IERC20(USDC_ADDRESS).safeTransfer(msg.sender, usdcBalance);
         }
     }
 }
